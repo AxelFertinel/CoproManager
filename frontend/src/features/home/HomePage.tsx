@@ -41,7 +41,7 @@ export default function HomePage() {
     ];
 
     return (
-        <div className="container">
+        <div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold">
                     Bienvenue dans votre Gestionnaire de Copropriété

@@ -36,7 +36,7 @@ export default function Navigation() {
 
     return (
         <nav className="border-b bg-background">
-            <div className="flex h-16 items-center justify-between px-4 max-w-screen-xl mx-auto">
+            <div className="flex h-16 items-center justify-between  container mx-auto">
                 <Link to="/" className="text-xl font-bold text-primary">
                     CoproManager
                 </Link>
@@ -116,7 +116,7 @@ export default function Navigation() {
 
                     <Button
                         variant="ghost"
-                        className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        className="text-white bg-orange-500 hover:bg-orange-600 hover:text-white"
                         onClick={handleLogout}
                     >
                         <LogOut className="h-4 w-4 mr-2" />

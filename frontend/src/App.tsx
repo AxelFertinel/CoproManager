@@ -43,7 +43,7 @@ export default function App() {
             <Router>
                 <div className="min-h-screen bg-background">
                     {isLoggedIn && <Navigation />}
-                    <main className="p-4">
+                    <main className="p-4 container">
                         <Routes>
                             <Route path="/login" element={<LoginPage />} />
                             <Route
