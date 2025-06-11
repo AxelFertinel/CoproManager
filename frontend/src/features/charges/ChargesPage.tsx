@@ -32,6 +32,7 @@ export default function ChargesPage() {
         queryFn: chargesService.getAll,
     });
 
+    console.log("🧎‍♂️ charges:", charges);
     const deleteChargeMutation = useMutation({
         mutationFn: chargesService.delete,
         onSuccess: () => {
@@ -63,7 +64,7 @@ export default function ChargesPage() {
     };
 
     return (
-        <div>
+        <div className="py-6 space-y-6">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold">
                     Liste des factures de la copropriété
@@ -92,7 +93,7 @@ export default function ChargesPage() {
                             .map((charge) => (
                                 <Card
                                     key={charge.id}
-                                    className="hover:bg-accent"
+                                    className="hover:shadow-lg transition-shadow"
                                 >
                                     <CardHeader>
                                         <CardTitle className="text-lg">
@@ -114,15 +115,10 @@ export default function ChargesPage() {
                                                 </p>
                                                 <p>
                                                     {charge.amount}€
-                                                    {charge.waterUnitPrice && (
-                                                        <span className="text-sm text-gray-500 ml-2">
-                                                            (
-                                                            {
-                                                                charge.waterUnitPrice
-                                                            }
-                                                            €/m³)
-                                                        </span>
-                                                    )}
+                                                    <span className="text-sm text-gray-500 ml-2">
+                                                        ({charge.waterUnitPrice}
+                                                        €/m³)
+                                                    </span>
                                                 </p>
                                             </div>
                                             <div>
@@ -219,7 +215,7 @@ export default function ChargesPage() {
                             .map((charge) => (
                                 <Card
                                     key={charge.id}
-                                    className="hover:bg-accent"
+                                    className="hover:shadow-lg transition-shadow"
                                 >
                                     <CardHeader>
                                         <CardTitle className="text-lg">
@@ -335,7 +331,7 @@ export default function ChargesPage() {
                             .map((charge) => (
                                 <Card
                                     key={charge.id}
-                                    className="hover:bg-accent"
+                                    className="hover:shadow-lg transition-shadow"
                                 >
                                     <CardHeader>
                                         <CardTitle className="text-lg">

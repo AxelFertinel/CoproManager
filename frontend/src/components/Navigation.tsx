@@ -1,18 +1,38 @@
-import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Menu, X, LogOut } from "lucide-react";
+import { authService } from "../services/auth.service";
+import { toast } from "react-toastify";
+import { Button } from "./ui/Button";
+import { User } from "../types/auth";
 
 export default function Navigation() {
     const location = useLocation();
+    const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        setUser(authService.getCurrentUser());
+    }, []);
 
     const isActive = (path: string) => {
         return location.pathname === path;
     };
 
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
+    const handleLogout = async () => {
+        try {
+            await authService.logout();
+            toast.success("Déconnexion réussie");
+            navigate("/login");
+        } catch (error) {
+            toast.error("Erreur lors de la déconnexion");
+        }
     };
+
+    if (!user) {
+        return null;
+    }
 
     return (
         <nav className="border-b bg-background">
@@ -24,7 +44,7 @@ export default function Navigation() {
                 {/* Menu Burger pour mobile */}
                 <button
                     className="md:hidden p-2 bg-primary rounded-md hover:bg-primary/90 transition-colors"
-                    onClick={toggleMenu}
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="Toggle menu"
                 >
                     {isMenuOpen ? (
@@ -51,39 +71,57 @@ export default function Navigation() {
                     >
                         Accueil
                     </Link>
-                    <Link
-                        to="/users"
-                        className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                            isActive("/users")
-                                ? "bg-primary text-primary-foreground"
-                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        }`}
-                        onClick={() => setIsMenuOpen(false)}
+
+                    {user.role === "admin" && (
+                        <>
+                            <Link
+                                to="/copropriete"
+                                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                                    isActive("/copropriete")
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                }`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Copropriétaires
+                            </Link>
+                            <Link
+                                to="/charges"
+                                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                                    isActive("/charges")
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                }`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Charges
+                            </Link>
+                            <Link
+                                to="/calculations"
+                                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                                    isActive("/calculations")
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                }`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Calculs
+                            </Link>
+                        </>
+                    )}
+
+                    <span className="text-primary-foreground">
+                        Bienvenue, {user.name || user.email}!
+                    </span>
+
+                    <Button
+                        variant="ghost"
+                        className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        onClick={handleLogout}
                     >
-                        Copropriétaires
-                    </Link>
-                    <Link
-                        to="/charges"
-                        className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                            isActive("/charges")
-                                ? "bg-primary text-primary-foreground"
-                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        }`}
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        Charges
-                    </Link>
-                    <Link
-                        to="/calculations"
-                        className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                            isActive("/calculations")
-                                ? "bg-primary text-primary-foreground"
-                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        }`}
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        Calculs
-                    </Link>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Déconnexion
+                    </Button>
                 </div>
             </div>
         </nav>

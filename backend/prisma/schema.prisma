@@ -14,16 +14,21 @@ datasource db {
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
-  email            String    @unique
-  name             String
-  tantieme         Float
-  advanceCharges   Float     @default(0)
-  waterMeterOld    Float     @default(0)
-  waterMeterNew    Float     @default(0)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  charges          Charge[]
+  id              String    @id @default(uuid())
+  email           String    @unique
+  name            String
+  tantieme        Float
+  advanceCharges  Float     @default(0)
+  waterMeterOld   Float     @default(0)
+  waterMeterNew   Float     @default(0)
+  password        String
+  role            String    @default("basic")
+  coproprieteId   String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  charges         Charge[]
+
+  @@map("users")
 }
 
 model Charge {
@@ -37,7 +42,7 @@ model Charge {
   waterUnitPrice    Float?    @default(2.9)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  userId            Int?
+  userId            String?
   user              User?     @relation(fields: [userId], references: [id])
 }
 

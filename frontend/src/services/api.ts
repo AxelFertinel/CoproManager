@@ -1,4 +1,5 @@
 import axios from "axios";
+import { authService } from "./auth.service";
 
 export const api = axios.create({
     baseURL: "http://localhost:3000",
@@ -7,8 +8,22 @@ export const api = axios.create({
     },
 });
 
+// Intercepteur pour ajouter le token d'authentification
+api.interceptors.request.use(
+    (config) => {
+        const token = authService.getToken();
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 export interface User {
-    id: number;
+    id: string;
     email: string;
     name: string;
     tantieme: number;
@@ -26,7 +41,7 @@ export enum ChargeType {
 }
 
 export interface Charge {
-    id: number;
+    id: string;
     amount: number;
     date: string;
     startDate: string;
@@ -51,17 +66,17 @@ export const getUsers = async () => {
     return response.data;
 };
 
-export const getUser = async (id: number) => {
+export const getUser = async (id: string) => {
     const response = await api.get<User>(`/users/${id}`);
     return response.data;
 };
 
-export const updateUser = async (id: number, data: Partial<User>) => {
+export const updateUser = async (id: string, data: Partial<User>) => {
     const response = await api.patch<User>(`/users/${id}`, data);
     return response.data;
 };
 
-export const deleteUser = async (id: number) => {
+export const deleteUser = async (id: string) => {
     await api.delete(`/users/${id}`);
 };
 
@@ -77,19 +92,19 @@ export const getCharges = async () => {
     return response.data;
 };
 
-export const getCharge = async (id: number) => {
+export const getCharge = async (id: string) => {
     const response = await api.get<Charge>(`/charges/${id}`);
     return response.data;
 };
 
 export const updateCharge = async (
-    id: number,
+    id: string,
     data: Partial<Omit<Charge, "monthlyCharge">>
 ) => {
     const response = await api.patch<Charge>(`/charges/${id}`, data);
     return response.data;
 };
 
-export const deleteCharge = async (id: number) => {
+export const deleteCharge = async (id: string) => {
     await api.delete(`/charges/${id}`);
 };

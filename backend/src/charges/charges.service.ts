@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChargeDto } from './dto/create-charge.dto';
 import { UpdateChargeDto } from './dto/update-charge.dto';
@@ -7,47 +7,96 @@ import { UpdateChargeDto } from './dto/update-charge.dto';
 export class ChargesService {
   constructor(private prisma: PrismaService) {}
 
-  create(createChargeDto: CreateChargeDto) {
+  async create(createChargeDto: CreateChargeDto) {
     return this.prisma.charge.create({
       data: {
         ...createChargeDto,
-        userId:
-          createChargeDto.userId === undefined ? null : createChargeDto.userId,
-      },
-      include: {
-        user: true,
+        userId: createChargeDto.userId || null,
+        startDate: createChargeDto.startDate || new Date(),
+        endDate: createChargeDto.endDate || new Date(),
       },
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.charge.findMany({
-      include: {
-        user: true,
+      select: {
+        id: true,
+        type: true,
+        amount: true,
+        date: true,
+        startDate: true,
+        endDate: true,
+        description: true,
+        waterUnitPrice: true,
+        userId: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
   }
 
-  findOne(id: number) {
-    return this.prisma.charge.findUnique({
+  async findOne(id: number) {
+    const charge = await this.prisma.charge.findUnique({
       where: { id },
-      include: {
-        user: true,
+      select: {
+        id: true,
+        type: true,
+        amount: true,
+        date: true,
+        startDate: true,
+        endDate: true,
+        description: true,
+        userId: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
+
+    if (!charge) {
+      throw new NotFoundException(`Charge avec l'ID ${id} non trouvée`);
+    }
+
+    return charge;
   }
 
-  update(id: number, updateChargeDto: UpdateChargeDto) {
+  async update(id: number, updateChargeDto: UpdateChargeDto) {
+    const charge = await this.prisma.charge.findUnique({
+      where: { id },
+    });
+
+    if (!charge) {
+      throw new NotFoundException(`Charge avec l'ID ${id} non trouvée`);
+    }
+
     return this.prisma.charge.update({
       where: { id },
-      data: updateChargeDto,
-      include: {
-        user: true,
+      data: {
+        ...updateChargeDto,
+        userId: updateChargeDto.userId || null,
       },
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const charge = await this.prisma.charge.findUnique({
+      where: { id },
+    });
+
+    if (!charge) {
+      throw new NotFoundException(`Charge avec l'ID ${id} non trouvée`);
+    }
+
     return this.prisma.charge.delete({
       where: { id },
     });

@@ -1,14 +1,45 @@
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../components/ui/Button";
-import { Card, CardContent, CardHeader } from "../../components/ui/Card";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardFooter,
+} from "../../components/ui/Card";
 import { usersService } from "../../services/users";
+import { toast } from "react-toastify";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "../../components/ui/AlertDialog";
 
-export default function UsersPage() {
+export default function UserListPage() {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
     const { data: users, isLoading } = useQuery({
         queryKey: ["users"],
         queryFn: usersService.getAll,
+    });
+
+    const deleteUserMutation = useMutation({
+        mutationFn: usersService.delete,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            toast.success("Utilisateur supprimé avec succès");
+        },
+        onError: (error) => {
+            toast.error("Erreur lors de la suppression de l'utilisateur");
+            console.error(error);
+        },
     });
 
     if (isLoading) {
@@ -20,7 +51,7 @@ export default function UsersPage() {
     }
 
     return (
-        <div className="container mx-auto py-6 space-y-6">
+        <div className="py-6 space-y-6">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">
@@ -30,7 +61,7 @@ export default function UsersPage() {
                         Gérez les copropriétaires et leurs informations
                     </p>
                 </div>
-                <Button onClick={() => navigate("/users/new")}>
+                <Button onClick={() => navigate("/copropriete/new")}>
                     Ajouter un copropriétaire
                 </Button>
             </div>
@@ -51,15 +82,6 @@ export default function UsersPage() {
                                         {user.email}
                                     </p>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                        navigate(`/users/${user.id}/edit`)
-                                    }
-                                >
-                                    Modifier
-                                </Button>
                             </div>
                         </CardHeader>
                         <CardContent>
@@ -91,6 +113,50 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </CardContent>
+                        <CardFooter className="flex justify-end gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={() =>
+                                    navigate(`/copropriete/${user.id}`)
+                                }
+                            >
+                                Modifier
+                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive">
+                                        Supprimer
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Êtes-vous absolument sûr ?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Cette action ne peut pas être
+                                            annulée. Cela supprimera
+                                            définitivement cet utilisateur de
+                                            nos serveurs.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                            Annuler
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={() =>
+                                                deleteUserMutation.mutate(
+                                                    user.id
+                                                )
+                                            }
+                                        >
+                                            Continuer
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </CardFooter>
                     </Card>
                 ))}
             </div>

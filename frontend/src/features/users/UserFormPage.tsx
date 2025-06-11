@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, getUser, updateUser } from "../../services/api";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -13,26 +13,40 @@ import {
     CardHeader,
     CardTitle,
 } from "../../components/ui/Card";
+import { usersService } from "../../services/users";
+import { CreateUserData, UpdateUserData, User } from "../../types/user";
+import { Button } from "../../components/ui/Button";
+import { authService } from "../../services/auth.service";
 
-const userSchema = z.object({
+// Schema for form data, matches CreateUserData fields
+const userFormSchema = z.object({
     email: z.string().email("Email invalide"),
-    name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    tantieme: z.number().min(0, "Le tantieme doit être positif"),
+    name: z.string().min(1, "Le nom est requis"),
+    tantieme: z.number().min(0, "Le tantième doit être positif"),
     advanceCharges: z.number().min(0, "L'avance doit être positive"),
     waterMeterOld: z.number().min(0, "Le compteur d'eau doit être positif"),
     waterMeterNew: z.number().min(0, "Le compteur d'eau doit être positif"),
 });
 
-type UserFormData = z.infer<typeof userSchema>;
+type UserFormData = z.infer<typeof userFormSchema>;
+
+const defaultUserFormData: UserFormData = {
+    email: "",
+    name: "",
+    tantieme: 0,
+    advanceCharges: 0,
+    waterMeterOld: 0,
+    waterMeterNew: 0,
+};
 
 export default function UserFormPage() {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>(); // ID is now string
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const { data: user, isLoading: isUserLoading } = useQuery({
+    const { data: user, isLoading: isUserLoading } = useQuery<User, Error>({
         queryKey: ["users", id],
-        queryFn: () => getUser(Number(id)),
+        queryFn: () => usersService.getById(id as string), // Use usersService and string ID
         enabled: !!id,
     });
 
@@ -42,16 +56,30 @@ export default function UserFormPage() {
         formState: { errors },
         reset,
     } = useForm<UserFormData>({
-        resolver: zodResolver(userSchema),
-        values: user || undefined,
+        resolver: zodResolver(userFormSchema),
+        defaultValues: defaultUserFormData,
     });
 
-    const createUserMutation = useMutation({
-        mutationFn: createUser,
+    useEffect(() => {
+        if (user) {
+            reset({
+                email: user.email,
+                name: user.name,
+                tantieme: user.tantieme,
+                advanceCharges: user.advanceCharges,
+                waterMeterOld: user.waterMeterOld,
+                waterMeterNew: user.waterMeterNew,
+            });
+        }
+    }, [user, reset]);
+
+    // Mutation for creating a user
+    const createUserMutation = useMutation<User, Error, CreateUserData>({
+        mutationFn: usersService.create,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["users"] });
             toast.success("Utilisateur créé avec succès");
-            navigate("/users");
+            navigate("/copropriete"); // Updated path
         },
         onError: (error) => {
             toast.error("Erreur lors de la création de l'utilisateur");
@@ -59,13 +87,17 @@ export default function UserFormPage() {
         },
     });
 
-    const updateUserMutation = useMutation({
-        mutationFn: ({ id, data }: { id: number; data: UserFormData }) =>
-            updateUser(id, data),
+    // Mutation for updating a user
+    const updateUserMutation = useMutation<
+        User,
+        Error,
+        { id: string; data: UpdateUserData }
+    >({
+        mutationFn: ({ id, data }) => usersService.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["users"] });
             toast.success("Utilisateur mis à jour avec succès");
-            navigate("/users");
+            navigate("/copropriete"); // Updated path
         },
         onError: (error) => {
             toast.error("Erreur lors de la mise à jour de l'utilisateur");
@@ -75,9 +107,21 @@ export default function UserFormPage() {
 
     const onSubmit = (data: UserFormData) => {
         if (id) {
-            updateUserMutation.mutate({ id: Number(id), data });
+            updateUserMutation.mutate({
+                id: id as string,
+                data: data as UpdateUserData,
+            });
         } else {
-            createUserMutation.mutate(data);
+            const currentUser = authService.getCurrentUser();
+            if (currentUser) {
+                createUserMutation.mutate({
+                    ...(data as CreateUserData),
+                    coproprieteId: currentUser.coproprieteId,
+                    role: "basic",
+                });
+            } else {
+                toast.error("Erreur: Utilisateur non connecté.");
+            }
         }
     };
 
@@ -204,7 +248,7 @@ export default function UserFormPage() {
                                 htmlFor="waterMeterOld"
                                 className="text-sm font-medium"
                             >
-                                Ancien Compteur d'Eau
+                                Ancien Index Compteur d'Eau
                             </label>
                             <input
                                 {...register("waterMeterOld", {
@@ -213,7 +257,7 @@ export default function UserFormPage() {
                                 type="number"
                                 step="any"
                                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                placeholder="Ancien compteur d'eau"
+                                placeholder="Ancien index"
                             />
                             {errors.waterMeterOld && (
                                 <p className="text-sm text-destructive">
@@ -227,7 +271,7 @@ export default function UserFormPage() {
                                 htmlFor="waterMeterNew"
                                 className="text-sm font-medium"
                             >
-                                Nouveau Compteur d'Eau
+                                Nouvel Index Compteur d'Eau
                             </label>
                             <input
                                 {...register("waterMeterNew", {
@@ -236,7 +280,7 @@ export default function UserFormPage() {
                                 type="number"
                                 step="any"
                                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                placeholder="Nouveau compteur d'eau"
+                                placeholder="Nouvel index"
                             />
                             {errors.waterMeterNew && (
                                 <p className="text-sm text-destructive">
@@ -245,30 +289,10 @@ export default function UserFormPage() {
                             )}
                         </div>
                     </CardContent>
-                    <CardFooter className="flex justify-end space-x-4">
-                        <button
-                            type="button"
-                            onClick={() => navigate("/users")}
-                            className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                            Annuler
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={
-                                createUserMutation.isPending ||
-                                updateUserMutation.isPending
-                            }
-                            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-                        >
-                            {id
-                                ? updateUserMutation.isPending
-                                    ? "Modification..."
-                                    : "Modifier"
-                                : createUserMutation.isPending
-                                ? "Création..."
-                                : "Créer"}
-                        </button>
+                    <CardFooter className="flex justify-end">
+                        <Button type="submit">
+                            {id ? "Mettre à jour" : "Créer"}
+                        </Button>
                     </CardFooter>
                 </form>
             </Card>

@@ -87,6 +87,7 @@ export default function ChargeFormPage() {
                   date: formatDateForInput(charge.date),
                   startDate: formatDateForInput(charge.startDate),
                   endDate: formatDateForInput(charge.endDate),
+                  waterUnitPrice: charge.waterUnitPrice,
               }
             : undefined,
     });
