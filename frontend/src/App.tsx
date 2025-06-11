@@ -108,7 +108,7 @@ export default function App() {
                             />
 
                             <Route
-                                path="/charges/:id"
+                                path="/charges/:id/edit"
                                 element={
                                     <ProtectedRoute allowedRoles={["admin"]}>
                                         <ChargeFormPage />

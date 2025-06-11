@@ -32,7 +32,6 @@ export default function ChargesPage() {
         queryFn: chargesService.getAll,
     });
 
-    console.log("🧎‍♂️ charges:", charges);
     const deleteChargeMutation = useMutation({
         mutationFn: chargesService.delete,
         onSuccess: () => {
@@ -101,9 +100,9 @@ export default function ChargesPage() {
                                         </CardTitle>
                                         <CardDescription>
                                             {charge.description && (
-                                                <div className="mt-2 text-sm text-muted-foreground">
+                                                <span className="mt-2 text-sm text-muted-foreground">
                                                     {charge.description}
-                                                </div>
+                                                </span>
                                             )}
                                         </CardDescription>
                                     </CardHeader>
@@ -115,10 +114,15 @@ export default function ChargesPage() {
                                                 </p>
                                                 <p>
                                                     {charge.amount}€
-                                                    <span className="text-sm text-gray-500 ml-2">
-                                                        ({charge.waterUnitPrice}
-                                                        €/m³)
-                                                    </span>
+                                                    {charge.waterUnitPrice && (
+                                                        <span className="text-sm text-gray-500 ml-2">
+                                                            (
+                                                            {
+                                                                charge.waterUnitPrice
+                                                            }
+                                                            €/m³)
+                                                        </span>
+                                                    )}
                                                 </p>
                                             </div>
                                             <div>
@@ -223,9 +227,9 @@ export default function ChargesPage() {
                                         </CardTitle>
                                         <CardDescription>
                                             {charge.description && (
-                                                <div className="mt-2 text-sm text-muted-foreground">
+                                                <span className="mt-2 text-sm text-muted-foreground">
                                                     {charge.description}
-                                                </div>
+                                                </span>
                                             )}
                                         </CardDescription>
                                     </CardHeader>
@@ -339,9 +343,9 @@ export default function ChargesPage() {
                                         </CardTitle>
                                         <CardDescription>
                                             {charge.description && (
-                                                <div className="mt-2 text-sm text-muted-foreground">
+                                                <span className="mt-2 text-sm text-muted-foreground">
                                                     {charge.description}
-                                                </div>
+                                                </span>
                                             )}
                                         </CardDescription>
                                     </CardHeader>

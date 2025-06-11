@@ -54,7 +54,7 @@ export default function ChargeFormPage() {
 
     const { data: charge, isLoading: isChargeLoading } = useQuery({
         queryKey: ["charges", id],
-        queryFn: () => chargesService.getById(Number(id)),
+        queryFn: () => chargesService.getById(id!),
         enabled: !!id,
     });
 
@@ -105,7 +105,7 @@ export default function ChargeFormPage() {
     });
 
     const updateChargeMutation = useMutation({
-        mutationFn: ({ id, data }: { id: number; data: ChargeFormData }) =>
+        mutationFn: ({ id, data }: { id: string; data: ChargeFormData }) =>
             chargesService.update(id, data),
         onSuccess: () => {
             toast.success("Charge mise à jour avec succès");
@@ -119,7 +119,7 @@ export default function ChargeFormPage() {
 
     const onSubmit = (data: ChargeFormData) => {
         if (id) {
-            updateChargeMutation.mutate({ id: Number(id), data });
+            updateChargeMutation.mutate({ id, data });
         } else {
             createChargeMutation.mutate(data);
         }
