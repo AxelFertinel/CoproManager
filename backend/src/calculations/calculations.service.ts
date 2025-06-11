@@ -108,7 +108,6 @@ export class CalculationsService {
       // 5. Solde final
       const totalCharges = parseFloat(
         (
-          calculatedAdvance +
           calculatedWaterConsumption +
           calculatedInsuranceShare +
           calculatedBankFeesShare

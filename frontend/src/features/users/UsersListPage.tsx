@@ -21,6 +21,7 @@ import {
     AlertDialogTrigger,
 } from "../../components/ui/AlertDialog";
 import { Button } from "../../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 export default function UsersListPage() {
     const queryClient = useQueryClient();
@@ -45,23 +46,22 @@ export default function UsersListPage() {
         },
     });
 
+    const navigate = useNavigate();
+
     if (error) {
         toast.error("Erreur lors du chargement des copropriétaires");
         return null;
     }
 
     return (
-        <div className="container">
-            <div className="flex justify-between items-center mb-6">
+        <div>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold">
-                    Liste des copropriétaires
+                    Liste des Copropriétaires
                 </h1>
-                <Link
-                    to="/users/new"
-                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                >
+                <Button onClick={() => navigate("/users/new")}>
                     Ajouter un copropriétaire
-                </Link>
+                </Button>
             </div>
 
             {isLoading ? (

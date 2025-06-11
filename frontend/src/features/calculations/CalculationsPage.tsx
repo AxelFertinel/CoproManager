@@ -299,9 +299,22 @@ export default function CalculationsPage() {
     }
 
     return (
-        <div className="container">
-            <div className="flex justify-between items-center mb-6">
+        <div>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold">Calcul des charges</h1>
+                <div className="flex gap-2">
+                    <Button
+                        onClick={handleSubmit(onSubmit)}
+                        disabled={runCalculationsMutation.isPending}
+                    >
+                        {runCalculationsMutation.isPending
+                            ? "Calcul en cours..."
+                            : "Calculer"}
+                    </Button>
+                    <Button variant="outline" onClick={() => reset()}>
+                        Réinitialiser
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -458,16 +471,6 @@ export default function CalculationsPage() {
                                 />
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-end gap-2">
-                            <Button
-                                type="submit"
-                                disabled={runCalculationsMutation.isPending}
-                            >
-                                {runCalculationsMutation.isPending
-                                    ? "Calcul en cours..."
-                                    : "Calculer les Charges"}
-                            </Button>
-                        </CardFooter>
                     </form>
                 </Card>
 

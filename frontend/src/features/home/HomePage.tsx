@@ -4,6 +4,7 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
+    CardFooter,
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
@@ -40,8 +41,8 @@ export default function HomePage() {
     ];
 
     return (
-        <div className="container">
-            <div className="flex justify-between items-center mb-6">
+        <div>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold">
                     Bienvenue dans votre Gestionnaire de Copropriété
                 </h1>
@@ -74,7 +75,7 @@ export default function HomePage() {
                             </div>
                         </CardHeader>
                         <CardContent className="flex-grow"></CardContent>
-                        <CardContent className="pt-0">
+                        <CardFooter>
                             <Button
                                 onClick={() => navigate(step.path)}
                                 className="w-full"
@@ -82,7 +83,7 @@ export default function HomePage() {
                                 {step.buttonText}
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
-                        </CardContent>
+                        </CardFooter>
                     </Card>
                 ))}
             </div>
