@@ -40,13 +40,13 @@ const defaultUserFormData: UserFormData = {
 };
 
 export default function UserFormPage() {
-    const { id } = useParams<{ id: string }>(); // ID is now string
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
     const { data: user, isLoading: isUserLoading } = useQuery<User, Error>({
         queryKey: ["users", id],
-        queryFn: () => usersService.getById(id as string), // Use usersService and string ID
+        queryFn: () => usersService.getById(Number(id)),
         enabled: !!id,
     });
 
@@ -91,13 +91,13 @@ export default function UserFormPage() {
     const updateUserMutation = useMutation<
         User,
         Error,
-        { id: string; data: UpdateUserData }
+        { id: number; data: UpdateUserData }
     >({
         mutationFn: ({ id, data }) => usersService.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["users"] });
             toast.success("Utilisateur mis à jour avec succès");
-            navigate("/copropriete"); // Updated path
+            navigate("/copropriete");
         },
         onError: (error) => {
             toast.error("Erreur lors de la mise à jour de l'utilisateur");
@@ -108,7 +108,7 @@ export default function UserFormPage() {
     const onSubmit = (data: UserFormData) => {
         if (id) {
             updateUserMutation.mutate({
-                id: id as string,
+                id: Number(id),
                 data: data as UpdateUserData,
             });
         } else {
@@ -116,7 +116,7 @@ export default function UserFormPage() {
             if (currentUser) {
                 createUserMutation.mutate({
                     ...(data as CreateUserData),
-                    coproprieteId: currentUser.coproprieteId,
+                    coproprieteId: currentUser.coproprieteId || currentUser.id,
                     role: "basic",
                 });
             } else {

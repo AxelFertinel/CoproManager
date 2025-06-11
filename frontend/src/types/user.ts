@@ -1,7 +1,7 @@
 import { UserRole } from "./auth";
 
 export interface User {
-    id: string;
+    id: number;
     email: string;
     name: string;
     tantieme: number;
@@ -10,7 +10,7 @@ export interface User {
     waterMeterNew: number;
     password: string;
     role: UserRole;
-    coproprieteId: string;
+    coproprieteId: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -24,7 +24,7 @@ export interface CreateUserData {
     waterMeterOld: number;
     waterMeterNew: number;
     role: UserRole;
-    coproprieteId: string;
+    coproprieteId: number;
     // Le mot de passe et coproprieteId seront gérés par le backend/frontend automatiquement
 }
 

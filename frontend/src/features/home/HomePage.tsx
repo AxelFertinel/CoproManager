@@ -19,7 +19,7 @@ export default function HomePage() {
             description:
                 "Ajoutez et gérez les copropriétaires de votre immeuble. Définissez leurs tantièmes et leurs avances sur charges.",
             icon: <Users className="h-8 w-8" />,
-            path: "/users",
+            path: "/copropriete",
             buttonText: "Gérer les copropriétaires",
         },
         {

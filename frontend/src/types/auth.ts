@@ -1,10 +1,10 @@
 export type UserRole = "admin" | "basic";
 
 export interface User {
-    id: string;
+    id: number;
     email: string;
     role: UserRole;
-    coproprieteId: string;
+    coproprieteId: number;
     createdAt: string;
     updatedAt: string;
     name?: string;
@@ -27,7 +27,7 @@ export interface LoginCredentials {
 
 export interface RegisterData extends LoginCredentials {
     role: UserRole;
-    coproprieteId: string;
+    coproprieteId: number;
 }
 
 export interface AuthResponse {

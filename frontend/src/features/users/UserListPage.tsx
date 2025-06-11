@@ -31,7 +31,7 @@ export default function UserListPage() {
     });
 
     const deleteUserMutation = useMutation({
-        mutationFn: usersService.delete,
+        mutationFn: (id: number) => usersService.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["users"] });
             toast.success("Utilisateur supprimé avec succès");
@@ -124,7 +124,12 @@ export default function UserListPage() {
                             </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                    <Button variant="destructive">
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() =>
+                                            deleteUserMutation.mutate(user.id)
+                                        }
+                                    >
                                         Supprimer
                                     </Button>
                                 </AlertDialogTrigger>

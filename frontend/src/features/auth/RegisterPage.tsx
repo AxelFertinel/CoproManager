@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { RegisterData } from "../../types/auth";
+import { RegisterData, UserRole } from "../../types/auth";
 import { authService } from "../../services/auth.service";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -29,11 +29,10 @@ export default function RegisterPage() {
 
     const onSubmit = async (data: RegisterFormData) => {
         try {
-            // On force le rôle admin et on génère un ID de copropriété unique
-            const registerData = {
+            const registerData: RegisterData = {
                 ...data,
-                role: "admin",
-                coproprieteId: crypto.randomUUID(),
+                role: "admin" as UserRole,
+                coproprieteId: Math.floor(Math.random() * 1000000),
             };
             await authService.register(registerData);
             toast.success("Compte créé avec succès");
