@@ -7,7 +7,9 @@ import { UpdateLogementDto } from './dto/update-logement.dto';
 export class LogementsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createLogementDto: CreateLogementDto) {
+  async create(
+    createLogementDto: CreateLogementDto & { coproprieteId: string },
+  ) {
     return this.prisma.logement.create({
       data: {
         name: createLogementDto.name,
@@ -16,17 +18,20 @@ export class LogementsService {
         advanceCharges: createLogementDto.advanceCharges,
         waterMeterOld: createLogementDto.waterMeterOld,
         waterMeterNew: createLogementDto.waterMeterNew,
+        coproprieteId: createLogementDto.coproprieteId,
       },
     });
   }
 
-  async findAll() {
-    return this.prisma.logement.findMany();
+  async findAll(coproprieteId: string) {
+    return this.prisma.logement.findMany({
+      where: { coproprieteId },
+    });
   }
 
-  async findOne(id: number) {
-    const logement = await this.prisma.logement.findUnique({
-      where: { id },
+  async findOne(id: number, coproprieteId: string) {
+    const logement = await this.prisma.logement.findFirst({
+      where: { id, coproprieteId },
     });
 
     if (!logement) {
@@ -36,9 +41,13 @@ export class LogementsService {
     return logement;
   }
 
-  async update(id: number, updateLogementDto: UpdateLogementDto) {
-    const logement = await this.prisma.logement.findUnique({
-      where: { id },
+  async update(
+    id: number,
+    updateLogementDto: UpdateLogementDto,
+    coproprieteId: string,
+  ) {
+    const logement = await this.prisma.logement.findFirst({
+      where: { id, coproprieteId },
     });
 
     if (!logement) {
@@ -51,9 +60,9 @@ export class LogementsService {
     });
   }
 
-  async remove(id: number) {
-    const logement = await this.prisma.logement.findUnique({
-      where: { id },
+  async remove(id: number, coproprieteId: string) {
+    const logement = await this.prisma.logement.findFirst({
+      where: { id, coproprieteId },
     });
 
     if (!logement) {

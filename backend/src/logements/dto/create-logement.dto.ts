@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsEmail, Min } from 'class-validator';
+import { IsString, IsNumber, IsEmail, Min, IsUUID } from 'class-validator';
 
 export class CreateLogementDto {
   @IsString()
@@ -22,4 +22,7 @@ export class CreateLogementDto {
   @IsNumber()
   @Min(0)
   waterMeterNew: number;
+
+  @IsUUID()
+  coproprieteId: string;
 }

@@ -38,6 +38,7 @@ model Logement {
   advanceCharges  Float     @default(0)
   waterMeterOld   Float     @default(0)
   waterMeterNew   Float     @default(0)
+  coproprieteId   String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   charges         Charge[]
