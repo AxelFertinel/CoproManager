@@ -1,26 +1,28 @@
 import axios from "axios";
 import { authService } from "./auth.service";
+import {
+    Logement,
+    CreateLogementData,
+    UpdateLogementData,
+} from "../types/logement";
+
+const API_URL = "http://localhost:3000";
 
 export const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: API_URL,
     headers: {
         "Content-Type": "application/json",
     },
 });
 
-// Intercepteur pour ajouter le token d'authentification
-api.interceptors.request.use(
-    (config) => {
-        const token = authService.getToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+// Intercepteur pour ajouter le token JWT
+api.interceptors.request.use((config) => {
+    const token = authService.getToken();
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
     }
-);
+    return config;
+});
 
 export interface User {
     id: string;
@@ -41,15 +43,14 @@ export enum ChargeType {
 }
 
 export interface Charge {
-    id: string;
+    id: number;
+    type: ChargeType;
     amount: number;
     date: string;
     startDate: string;
     endDate: string;
-    type: ChargeType;
-    description?: string;
-    monthlyCharge?: number;
     waterUnitPrice?: number;
+    description?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -107,4 +108,125 @@ export const updateCharge = async (
 
 export const deleteCharge = async (id: string) => {
     await api.delete(`/charges/${id}`);
+};
+
+// Logements
+export const getLogements = async (): Promise<Logement[]> => {
+    const response = await api.get(`/logements`);
+    return response.data;
+};
+
+export const getLogement = async (id: number): Promise<Logement> => {
+    const response = await api.get(`/logements/${id}`);
+    return response.data;
+};
+
+export const createLogement = async (
+    data: CreateLogementData
+): Promise<Logement> => {
+    const response = await api.post(`/logements`, data);
+    return response.data;
+};
+
+export const updateLogement = async (
+    id: number,
+    data: UpdateLogementData
+): Promise<Logement> => {
+    const response = await api.patch(`/logements/${id}`, data);
+    return response.data;
+};
+
+export const deleteLogement = async (id: number): Promise<void> => {
+    await api.delete(`/logements/${id}`);
+};
+
+// Auth
+export const login = async (email: string, password: string) => {
+    const response = await axios.post(`${API_URL}/auth/login`, {
+        email,
+        password,
+    });
+    return response.data;
+};
+
+export const register = async (data: {
+    email: string;
+    password: string;
+    name: string;
+    coproprieteId: string;
+}) => {
+    const response = await axios.post(`${API_URL}/auth/register`, data);
+    return response.data;
+};
+
+export const getCurrentUser = async () => {
+    const response = await axios.get(`${API_URL}/auth/me`);
+    return response.data;
+};
+
+// Copropriétés
+export const getCoproprietes = async () => {
+    const response = await axios.get(`${API_URL}/coproprietes`);
+    return response.data;
+};
+
+export const getCopropriete = async (id: string) => {
+    const response = await axios.get(`${API_URL}/coproprietes/${id}`);
+    return response.data;
+};
+
+export const createCopropriete = async (data: {
+    name: string;
+    address: string;
+}) => {
+    const response = await axios.post(`${API_URL}/coproprietes`, data);
+    return response.data;
+};
+
+export const updateCopropriete = async (
+    id: string,
+    data: { name: string; address: string }
+) => {
+    const response = await axios.patch(`${API_URL}/coproprietes/${id}`, data);
+    return response.data;
+};
+
+export const deleteCopropriete = async (id: string) => {
+    await axios.delete(`${API_URL}/coproprietes/${id}`);
+};
+
+// Calculs
+export const getCalculations = async () => {
+    const response = await axios.get(`${API_URL}/calculations`);
+    return response.data;
+};
+
+export const getCalculation = async (id: string) => {
+    const response = await axios.get(`${API_URL}/calculations/${id}`);
+    return response.data;
+};
+
+export const createCalculation = async (data: {
+    totalWaterBill: number;
+    waterUnitPrice: number;
+    logementId: number;
+}) => {
+    const response = await axios.post(`${API_URL}/calculations`, data);
+    return response.data;
+};
+
+export const updateCalculation = async (
+    id: string,
+    data: {
+        totalWaterBill: number;
+        waterUnitPrice: number;
+        logementId: number;
+    }
+) => {
+    const response = await axios.patch(`${API_URL}/calculations/${id}`, data);
+    return response.data;
+};
+
+export const deleteCalculation = async (id: string) => {
+    await axios.delete(`${API_URL}/calculations/${id}`);
 };

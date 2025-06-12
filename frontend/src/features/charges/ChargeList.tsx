@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Button } from "../../components/ui/Button";
-import { Logement } from "../../types/logement";
-import { logementsService } from "../../services/logements";
+import { Charge } from "../../types/charge";
+import { chargesService } from "../../services/charges";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -16,38 +16,63 @@ import {
     AlertDialogTitle,
 } from "../../components/ui/AlertDialog";
 
-interface LogementListProps {
-    logements: Logement[];
+interface ChargeListProps {
+    charges: Charge[];
 }
 
-export default function LogementList({ logements }: LogementListProps) {
-    const [logementToDelete, setLogementToDelete] = useState<Logement | null>(
-        null
-    );
+export default function ChargeList({ charges }: ChargeListProps) {
+    const [chargeToDelete, setChargeToDelete] = useState<Charge | null>(null);
     const queryClient = useQueryClient();
 
-    const deleteLogementMutation = useMutation({
-        mutationFn: (id: number) => logementsService.delete(id),
+    const deleteChargeMutation = useMutation({
+        mutationFn: (id: string) => chargesService.delete(id),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["logements"] });
-            toast.success("Logement supprimé avec succès");
-            setLogementToDelete(null);
+            queryClient.invalidateQueries({ queryKey: ["charges"] });
+            toast.success("Charge supprimée avec succès");
+            setChargeToDelete(null);
         },
         onError: (error) => {
-            toast.error("Erreur lors de la suppression du logement");
+            toast.error("Erreur lors de la suppression de la charge");
             console.error(error);
         },
     });
 
-    const handleDelete = (logement: Logement) => {
-        setLogementToDelete(logement);
+    const handleDelete = (charge: Charge) => {
+        setChargeToDelete(charge);
     };
 
     const confirmDelete = () => {
-        if (logementToDelete) {
-            deleteLogementMutation.mutate(logementToDelete.id);
+        if (chargeToDelete) {
+            deleteChargeMutation.mutate(chargeToDelete.id.toString());
         }
     };
+
+    const getChargeTypeLabel = (type: string) => {
+        switch (type) {
+            case "WATER":
+                return "Facture d'eau";
+            case "INSURANCE":
+                return "Assurance";
+            case "BANK":
+                return "Frais bancaires";
+            default:
+                return type;
+        }
+    };
+
+    if (charges.length === 0) {
+        return (
+            <div className="text-center py-10">
+                <p className="text-lg text-muted-foreground">
+                    Aucune charge trouvée. Ajoutez une nouvelle charge pour
+                    commencer.
+                </p>
+                <Link to="/charges/new">
+                    <Button className="mt-4">Ajouter une charge</Button>
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">
@@ -56,22 +81,19 @@ export default function LogementList({ logements }: LogementListProps) {
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nom
+                                Type
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
+                                Montant
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Tantième
+                                Date
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Avance sur charges
+                                Période
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Compteur d'eau
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Dernière mise à jour
+                                Description
                             </th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
@@ -79,32 +101,39 @@ export default function LogementList({ logements }: LogementListProps) {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {logements.map((logement) => (
-                            <tr key={logement.id}>
+                        {charges.map((charge) => (
+                            <tr key={charge.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {logement.name}
+                                    {getChargeTypeLabel(charge.type)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {logement.email}
+                                    {charge.amount.toFixed(2)} €
+                                    {charge.waterUnitPrice && (
+                                        <span className="text-sm text-gray-500 ml-2">
+                                            ({charge.waterUnitPrice} €/m³)
+                                        </span>
+                                    )}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {logement.tantieme}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {logement.advanceCharges} €
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {logement.waterMeterOld} m³ →{" "}
-                                    {logement.waterMeterNew} m³
+                                    {new Date(charge.date).toLocaleDateString(
+                                        "fr-FR"
+                                    )}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {new Date(
-                                        logement.updatedAt
+                                        charge.startDate
+                                    ).toLocaleDateString("fr-FR")}{" "}
+                                    -{" "}
+                                    {new Date(
+                                        charge.endDate
                                     ).toLocaleDateString("fr-FR")}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-500">
+                                    {charge.description || "-"}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <Link
-                                        to={`/logement/${logement.id}`}
+                                        to={`/charges/${charge.id}`}
                                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                                     >
                                         <Button variant="outline">
@@ -113,7 +142,7 @@ export default function LogementList({ logements }: LogementListProps) {
                                     </Link>
                                     <Button
                                         variant="destructive"
-                                        onClick={() => handleDelete(logement)}
+                                        onClick={() => handleDelete(charge)}
                                     >
                                         Supprimer
                                     </Button>
@@ -125,16 +154,16 @@ export default function LogementList({ logements }: LogementListProps) {
             </div>
 
             <AlertDialog
-                open={!!logementToDelete}
-                onOpenChange={() => setLogementToDelete(null)}
+                open={!!chargeToDelete}
+                onOpenChange={() => setChargeToDelete(null)}
             >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cette action est irréversible. Le logement{" "}
-                            {logementToDelete?.name} sera définitivement
-                            supprimé.
+                            Cette action est irréversible. La charge de{" "}
+                            {chargeToDelete?.amount}€ sera définitivement
+                            supprimée.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

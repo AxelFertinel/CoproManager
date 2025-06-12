@@ -72,18 +72,18 @@ export default function Navigation() {
                         Accueil
                     </Link>
 
-                    {user.role === "admin" && (
+                    {user.role === "ADMIN" && (
                         <>
                             <Link
-                                to="/copropriete"
+                                to="/logement"
                                 className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                                    isActive("/copropriete")
+                                    isActive("/logement")
                                         ? "bg-primary text-primary-foreground"
                                         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                 }`}
                                 onClick={() => setIsMenuOpen(false)}
                             >
-                                Copropriétaires
+                                Logements
                             </Link>
                             <Link
                                 to="/charges"

@@ -5,6 +5,10 @@ export interface Charge {
     type: ChargeType;
     amount: number;
     date: string;
+    startDate: string;
+    endDate: string;
+    waterUnitPrice?: number;
+    description?: string;
     createdAt: string;
     updatedAt: string;
 }

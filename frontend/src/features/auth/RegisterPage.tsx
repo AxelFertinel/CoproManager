@@ -29,10 +29,10 @@ export default function RegisterPage() {
 
     const onSubmit = async (data: RegisterFormData) => {
         try {
-            // On force le rôle admin et on génère un ID de copropriété unique
+            // On force le rôle ADMIN et on génère un ID de copropriété unique
             const registerData = {
                 ...data,
-                role: "admin",
+                role: "ADMIN",
                 coproprieteId: crypto.randomUUID(),
             };
             await authService.register(registerData);

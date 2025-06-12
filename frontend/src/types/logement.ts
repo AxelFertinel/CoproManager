@@ -8,7 +8,7 @@ export interface Logement {
     advanceCharges: number;
     waterMeterOld: number;
     waterMeterNew: number;
-    coproprieteId: number;
+    coproprieteId: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -21,7 +21,7 @@ export interface CreateLogementData {
     advanceCharges: number;
     waterMeterOld: number;
     waterMeterNew: number;
-    coproprieteId: number;
+    coproprieteId: string;
 }
 
 // Type pour la mise à jour d'un logement
@@ -32,5 +32,5 @@ export interface UpdateLogementData {
     advanceCharges?: number;
     waterMeterOld?: number;
     waterMeterNew?: number;
-    coproprieteId?: number;
+    coproprieteId?: string;
 }
