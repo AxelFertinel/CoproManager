@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateChargeDto } from './dto/create-charge.dto';
+import { CreateChargeDto, ChargeType } from './dto/create-charge.dto';
 import { UpdateChargeDto } from './dto/update-charge.dto';
 
 @Injectable()
@@ -13,6 +13,18 @@ export class ChargesService {
         ...createChargeDto,
         userId:
           createChargeDto.userId === undefined ? null : createChargeDto.userId,
+        waterAmount:
+          createChargeDto.type === ChargeType.WATER
+            ? createChargeDto.amount
+            : 0,
+        insuranceAmount:
+          createChargeDto.type === ChargeType.INSURANCE
+            ? createChargeDto.amount
+            : 0,
+        bankAmount:
+          createChargeDto.type === ChargeType.BANK ? createChargeDto.amount : 0,
+        advanceCharges: 0,
+        totalAmount: createChargeDto.amount,
       },
       include: {
         user: true,

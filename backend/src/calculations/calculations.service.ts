@@ -33,7 +33,10 @@ export class CalculationsService {
 
   create(createCalculationDto: CreateCalculationDto) {
     return this.prisma.calculation.create({
-      data: createCalculationDto,
+      data: {
+        ...createCalculationDto,
+        date: new Date(),
+      },
     });
   }
 
