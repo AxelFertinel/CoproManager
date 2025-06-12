@@ -21,6 +21,7 @@ CREATE TABLE `logements` (
     `advanceCharges` DOUBLE NOT NULL DEFAULT 0,
     `waterMeterOld` DOUBLE NOT NULL DEFAULT 0,
     `waterMeterNew` DOUBLE NOT NULL DEFAULT 0,
+    `coproprieteId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -37,7 +38,7 @@ CREATE TABLE `charges` (
     `startDate` DATETIME(3) NOT NULL,
     `endDate` DATETIME(3) NOT NULL,
     `description` TEXT NULL,
-    `waterUnitPrice` DOUBLE NULL DEFAULT 2.9,
+    `waterUnitPrice` DOUBLE NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `logementId` INTEGER NULL,

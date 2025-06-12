@@ -55,7 +55,7 @@ model Charge {
   startDate         DateTime
   endDate           DateTime
   description       String?   @db.Text
-  waterUnitPrice    Float?    @default(2.9)
+  waterUnitPrice    Float?    
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   logementId        Int?
