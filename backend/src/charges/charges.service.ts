@@ -7,30 +7,16 @@ import { UpdateChargeDto } from './dto/update-charge.dto';
 export class ChargesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createChargeDto: CreateChargeDto) {
+  create(createChargeDto: CreateChargeDto, coproprieteId: string) {
     return this.prisma.charge.create({
       data: {
         ...createChargeDto,
-        logementId: createChargeDto.logementId || null,
-        startDate: createChargeDto.startDate || new Date(),
-        endDate: createChargeDto.endDate || new Date(),
-      },
-      include: {
-        logement: {
-          select: {
-            id: true,
-            name: true,
-            tantieme: true,
-            advanceCharges: true,
-            waterMeterOld: true,
-            waterMeterNew: true,
-          },
-        },
+        coproprieteId,
       },
     });
   }
 
-  async findAll() {
+  findAll() {
     return this.prisma.charge.findMany({
       select: {
         id: true,
@@ -41,23 +27,15 @@ export class ChargesService {
         endDate: true,
         description: true,
         waterUnitPrice: true,
-        logementId: true,
-        logement: {
-          select: {
-            id: true,
-            name: true,
-            tantieme: true,
-            advanceCharges: true,
-            waterMeterOld: true,
-            waterMeterNew: true,
-          },
-        },
+        coproprieteId: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   }
 
-  async findOne(id: number) {
-    const charge = await this.prisma.charge.findUnique({
+  findOne(id: number) {
+    return this.prisma.charge.findUnique({
       where: { id },
       select: {
         id: true,
@@ -67,66 +45,26 @@ export class ChargesService {
         startDate: true,
         endDate: true,
         description: true,
-        logementId: true,
-        logement: {
-          select: {
-            id: true,
-            name: true,
-            tantieme: true,
-            advanceCharges: true,
-            waterMeterOld: true,
-            waterMeterNew: true,
-          },
-        },
+        waterUnitPrice: true,
+        coproprieteId: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
-
-    if (!charge) {
-      throw new NotFoundException(`Charge avec l'ID ${id} non trouvée`);
-    }
-
-    return charge;
   }
 
-  async update(id: number, updateChargeDto: UpdateChargeDto) {
-    const charge = await this.prisma.charge.findUnique({
-      where: { id },
-    });
-
-    if (!charge) {
-      throw new NotFoundException(`Charge avec l'ID ${id} non trouvée`);
-    }
-
+  update(id: number, updateChargeDto: UpdateChargeDto) {
+    const { coproprieteId, ...data } = updateChargeDto;
     return this.prisma.charge.update({
       where: { id },
       data: {
-        ...updateChargeDto,
-        logementId: updateChargeDto.logementId || null,
-      },
-      include: {
-        logement: {
-          select: {
-            id: true,
-            name: true,
-            tantieme: true,
-            advanceCharges: true,
-            waterMeterOld: true,
-            waterMeterNew: true,
-          },
-        },
+        ...data,
+        ...(coproprieteId && { coproprieteId }),
       },
     });
   }
 
-  async remove(id: number) {
-    const charge = await this.prisma.charge.findUnique({
-      where: { id },
-    });
-
-    if (!charge) {
-      throw new NotFoundException(`Charge avec l'ID ${id} non trouvée`);
-    }
-
+  remove(id: number) {
     return this.prisma.charge.delete({
       where: { id },
     });

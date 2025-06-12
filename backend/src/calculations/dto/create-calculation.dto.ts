@@ -1,25 +1,24 @@
-import { IsNumber, IsUUID, Min } from 'class-validator';
+import { IsNumber, IsString, IsDate } from 'class-validator';
 
 export class CreateCalculationDto {
-  @IsUUID()
-  logementId: number;
+  @IsDate()
+  date: Date;
 
   @IsNumber()
-  @Min(0)
   waterAmount: number;
 
   @IsNumber()
-  @Min(0)
   insuranceAmount: number;
 
   @IsNumber()
-  @Min(0)
   bankAmount: number;
 
   @IsNumber()
-  @Min(0)
   advanceCharges: number;
 
   @IsNumber()
   totalAmount: number;
+
+  @IsString()
+  coproprieteId: string;
 }

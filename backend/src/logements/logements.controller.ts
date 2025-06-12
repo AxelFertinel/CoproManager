@@ -21,11 +21,10 @@ export class LogementsController {
 
   @Post()
   create(@Body() createLogementDto: CreateLogementDto, @Request() req) {
-    const coproprieteId = req.user.coproprieteId;
-    return this.logementsService.create({
-      ...createLogementDto,
-      coproprieteId,
-    });
+    return this.logementsService.create(
+      createLogementDto,
+      req.user.coproprieteId,
+    );
   }
 
   @Get()

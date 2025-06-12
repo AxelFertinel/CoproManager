@@ -41,8 +41,6 @@ model Logement {
   coproprieteId   String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  charges         Charge[]
-  calculations    Calculation[]
 
   @@map("logements")
 }
@@ -56,24 +54,23 @@ model Charge {
   endDate           DateTime
   description       String?   @db.Text
   waterUnitPrice    Float?    
+  coproprieteId   String
+
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  logementId        Int?
-  logement          Logement? @relation(fields: [logementId], references: [id])
-
+ 
   @@map("charges")
 }
 
 model Calculation {
   id                Int       @id @default(autoincrement())
-  logementId        Int
-  logement          Logement  @relation(fields: [logementId], references: [id])
   waterAmount       Float
   insuranceAmount   Float
   bankAmount        Float
   advanceCharges    Float
   totalAmount       Float
   date              DateTime  @default(now())
+  coproprieteId   String
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

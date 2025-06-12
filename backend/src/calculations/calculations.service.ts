@@ -36,33 +36,71 @@ export interface CalculationResult {
 export class CalculationsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createCalculationDto: CreateCalculationDto) {
+  create(createCalculationDto: CreateCalculationDto) {
     return this.prisma.calculation.create({
       data: {
-        ...createCalculationDto,
-        date: new Date(),
+        date: createCalculationDto.date,
+        waterAmount: createCalculationDto.waterAmount,
+        insuranceAmount: createCalculationDto.insuranceAmount,
+        bankAmount: createCalculationDto.bankAmount,
+        advanceCharges: createCalculationDto.advanceCharges,
+        totalAmount: createCalculationDto.totalAmount,
+        coproprieteId: createCalculationDto.coproprieteId,
       },
     });
   }
 
-  async findAll() {
-    return this.prisma.calculation.findMany();
+  findAll() {
+    return this.prisma.calculation.findMany({
+      select: {
+        id: true,
+        date: true,
+        waterAmount: true,
+        insuranceAmount: true,
+        bankAmount: true,
+        advanceCharges: true,
+        totalAmount: true,
+        coproprieteId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
-  async findOne(id: number) {
+  findOne(id: number) {
     return this.prisma.calculation.findUnique({
       where: { id },
+      select: {
+        id: true,
+        date: true,
+        waterAmount: true,
+        insuranceAmount: true,
+        bankAmount: true,
+        advanceCharges: true,
+        totalAmount: true,
+        coproprieteId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 
-  async update(id: number, updateCalculationDto: UpdateCalculationDto) {
+  update(id: number, updateCalculationDto: UpdateCalculationDto) {
     return this.prisma.calculation.update({
       where: { id },
-      data: updateCalculationDto,
+      data: {
+        date: updateCalculationDto.date,
+        waterAmount: updateCalculationDto.waterAmount,
+        insuranceAmount: updateCalculationDto.insuranceAmount,
+        bankAmount: updateCalculationDto.bankAmount,
+        advanceCharges: updateCalculationDto.advanceCharges,
+        totalAmount: updateCalculationDto.totalAmount,
+        coproprieteId: updateCalculationDto.coproprieteId,
+      },
     });
   }
 
-  async remove(id: number) {
+  remove(id: number) {
     return this.prisma.calculation.delete({
       where: { id },
     });

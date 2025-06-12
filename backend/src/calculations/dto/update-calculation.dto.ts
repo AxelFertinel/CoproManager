@@ -1,4 +1,31 @@
-import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
-import { CalculateChargesDto } from './calculate-charges.dto';
+import { IsNumber, IsString, IsDate, IsOptional } from 'class-validator';
 
-export class UpdateCalculationDto extends CalculateChargesDto {}
+export class UpdateCalculationDto {
+  @IsDate()
+  @IsOptional()
+  date?: Date;
+
+  @IsNumber()
+  @IsOptional()
+  waterAmount?: number;
+
+  @IsNumber()
+  @IsOptional()
+  insuranceAmount?: number;
+
+  @IsNumber()
+  @IsOptional()
+  bankAmount?: number;
+
+  @IsNumber()
+  @IsOptional()
+  advanceCharges?: number;
+
+  @IsNumber()
+  @IsOptional()
+  totalAmount?: number;
+
+  @IsString()
+  @IsOptional()
+  coproprieteId?: string;
+}

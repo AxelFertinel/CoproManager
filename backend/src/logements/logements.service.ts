@@ -7,18 +7,11 @@ import { UpdateLogementDto } from './dto/update-logement.dto';
 export class LogementsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createLogementDto: CreateLogementDto & { coproprieteId: string },
-  ) {
+  async create(createLogementDto: CreateLogementDto, coproprieteId: string) {
     return this.prisma.logement.create({
       data: {
-        name: createLogementDto.name,
-        email: createLogementDto.email,
-        tantieme: createLogementDto.tantieme,
-        advanceCharges: createLogementDto.advanceCharges,
-        waterMeterOld: createLogementDto.waterMeterOld,
-        waterMeterNew: createLogementDto.waterMeterNew,
-        coproprieteId: createLogementDto.coproprieteId,
+        ...createLogementDto,
+        coproprieteId,
       },
     });
   }
