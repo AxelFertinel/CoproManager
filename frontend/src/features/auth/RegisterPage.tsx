@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { RegisterData } from "../../types/auth";
 import { authService } from "../../services/auth.service";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -13,11 +12,7 @@ import {
     CardFooter,
 } from "../../components/ui/Card";
 import { Label } from "../../components/ui/Label";
-
-interface RegisterFormData {
-    email: string;
-    password: string;
-}
+import { RegisterData, UserRole } from "@/types/auth";
 
 export default function RegisterPage() {
     const navigate = useNavigate();
@@ -25,19 +20,18 @@ export default function RegisterPage() {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm<RegisterFormData>();
+    } = useForm<RegisterData>();
 
-    const onSubmit = async (data: RegisterFormData) => {
+    const onSubmit = async (data: RegisterData) => {
         try {
-            // On force le rôle ADMIN et on génère un ID de copropriété unique
-            const registerData = {
+            const registerData: RegisterData = {
                 ...data,
-                role: "ADMIN",
+                role: "ADMIN" as UserRole,
                 coproprieteId: crypto.randomUUID(),
             };
             await authService.register(registerData);
             toast.success("Compte créé avec succès");
-            navigate("/"); // Rediriger vers la page d'accueil après l'inscription
+            navigate("/");
         } catch (error) {
             toast.error("Erreur lors de la création du compte");
         }

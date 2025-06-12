@@ -2,12 +2,13 @@ import type { User } from "./user";
 
 export interface Calculation {
     id: number;
-    userId: number;
-    user: User;
-    totalCharges: number;
-    userShare: number;
+    logementId: number;
+    waterAmount: number;
+    insuranceAmount: number;
+    bankAmount: number;
     advanceCharges: number;
-    balance: number;
+    totalAmount: number;
+    date: string;
     createdAt: string;
     updatedAt: string;
 }

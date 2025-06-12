@@ -1,4 +1,4 @@
-export type UserRole = "ADMIN" | "basic";
+export type UserRole = "ADMIN" | "BASIC";
 
 export interface User {
     id: string;
@@ -27,7 +27,7 @@ export interface LoginCredentials {
 
 export interface RegisterData extends LoginCredentials {
     role: UserRole;
-    coproprieteId: string;
+    coproprieteId: `${string}-${string}-${string}-${string}-${string}`;
 }
 
 export interface AuthResponse {
