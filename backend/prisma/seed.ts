@@ -19,7 +19,7 @@
 //       waterMeterOld: 0,
 //       waterMeterNew: 0,
 //       password: await bcrypt.hash('password123', 10),
-//       role: 'admin',
+//       role: 'ADMIN',
 //       coproprieteId: 'copro1',
 //     },
 //   });

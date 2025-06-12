@@ -1,9 +1,13 @@
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsString, IsNumber, IsEmail, Min, IsOptional } from 'class-validator';
 
 export class UpdateLogementDto {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @IsEmail()
+  @IsOptional()
+  email?: string;
 
   @IsNumber()
   @Min(0)
@@ -24,8 +28,4 @@ export class UpdateLogementDto {
   @Min(0)
   @IsOptional()
   waterMeterNew?: number;
-
-  @IsNumber()
-  @IsOptional()
-  userId?: number;
 }

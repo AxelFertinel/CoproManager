@@ -84,20 +84,13 @@ export class CalculationsService {
     if (logementId) {
       const logement = await this.prisma.logement.findUnique({
         where: { id: logementId },
-        include: {
-          user: true,
-        },
       });
       if (!logement) {
         throw new Error('Logement non trouvé');
       }
       logements = [logement];
     } else {
-      logements = await this.prisma.logement.findMany({
-        include: {
-          user: true,
-        },
-      });
+      logements = await this.prisma.logement.findMany({});
     }
 
     const results: CalculationResult[] = [];

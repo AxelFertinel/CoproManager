@@ -21,42 +21,12 @@ export class UsersService {
   async findAll(coproprieteId: string) {
     return this.prisma.user.findMany({
       where: { coproprieteId },
-      select: {
-        id: true,
-        email: true,
-        coproprieteId: true,
-        logements: {
-          select: {
-            id: true,
-            name: true,
-            tantieme: true,
-            advanceCharges: true,
-            waterMeterOld: true,
-            waterMeterNew: true,
-          },
-        },
-      },
     });
   }
 
   async findOne(id: number, coproprieteId: string) {
     const user = await this.prisma.user.findFirst({
       where: { id, coproprieteId },
-      select: {
-        id: true,
-        email: true,
-        coproprieteId: true,
-        logements: {
-          select: {
-            id: true,
-            name: true,
-            tantieme: true,
-            advanceCharges: true,
-            waterMeterOld: true,
-            waterMeterNew: true,
-          },
-        },
-      },
     });
 
     if (!user) {

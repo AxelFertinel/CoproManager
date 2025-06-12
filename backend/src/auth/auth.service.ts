@@ -39,6 +39,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       coproprieteId: user.coproprieteId,
+      role: user.role,
     };
     return {
       access_token: this.jwtService.sign(payload),
@@ -46,6 +47,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         coproprieteId: user.coproprieteId,
+        role: user.role,
       },
     };
   }
@@ -72,6 +74,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       coproprieteId: user.coproprieteId,
+      role: user.role,
     };
     return {
       access_token: this.jwtService.sign(payload),
@@ -79,6 +82,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         coproprieteId: user.coproprieteId,
+        role: user.role,
       },
     };
   }
@@ -95,16 +99,6 @@ export class AuthService {
         id: true,
         email: true,
         coproprieteId: true,
-        logements: {
-          select: {
-            id: true,
-            name: true,
-            tantieme: true,
-            advanceCharges: true,
-            waterMeterOld: true,
-            waterMeterNew: true,
-          },
-        },
       },
     });
 

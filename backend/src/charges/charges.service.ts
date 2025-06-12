@@ -24,13 +24,6 @@ export class ChargesService {
             advanceCharges: true,
             waterMeterOld: true,
             waterMeterNew: true,
-            user: {
-              select: {
-                id: true,
-                email: true,
-                coproprieteId: true,
-              },
-            },
           },
         },
       },
@@ -57,13 +50,6 @@ export class ChargesService {
             advanceCharges: true,
             waterMeterOld: true,
             waterMeterNew: true,
-            user: {
-              select: {
-                id: true,
-                email: true,
-                coproprieteId: true,
-              },
-            },
           },
         },
       },
@@ -90,13 +76,6 @@ export class ChargesService {
             advanceCharges: true,
             waterMeterOld: true,
             waterMeterNew: true,
-            user: {
-              select: {
-                id: true,
-                email: true,
-                coproprieteId: true,
-              },
-            },
           },
         },
       },
@@ -133,13 +112,6 @@ export class ChargesService {
             advanceCharges: true,
             waterMeterOld: true,
             waterMeterNew: true,
-            user: {
-              select: {
-                id: true,
-                email: true,
-                coproprieteId: true,
-              },
-            },
           },
         },
       },

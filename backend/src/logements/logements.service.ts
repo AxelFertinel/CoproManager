@@ -9,46 +9,24 @@ export class LogementsService {
 
   async create(createLogementDto: CreateLogementDto) {
     return this.prisma.logement.create({
-      data: createLogementDto,
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            coproprieteId: true,
-          },
-        },
+      data: {
+        name: createLogementDto.name,
+        email: createLogementDto.email,
+        tantieme: createLogementDto.tantieme,
+        advanceCharges: createLogementDto.advanceCharges,
+        waterMeterOld: createLogementDto.waterMeterOld,
+        waterMeterNew: createLogementDto.waterMeterNew,
       },
     });
   }
 
-  async findAll(userId: number) {
-    return this.prisma.logement.findMany({
-      where: { userId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            coproprieteId: true,
-          },
-        },
-      },
-    });
+  async findAll() {
+    return this.prisma.logement.findMany();
   }
 
-  async findOne(id: number, userId: number) {
-    const logement = await this.prisma.logement.findFirst({
-      where: { id, userId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            coproprieteId: true,
-          },
-        },
-      },
+  async findOne(id: number) {
+    const logement = await this.prisma.logement.findUnique({
+      where: { id },
     });
 
     if (!logement) {
@@ -58,13 +36,9 @@ export class LogementsService {
     return logement;
   }
 
-  async update(
-    id: number,
-    userId: number,
-    updateLogementDto: UpdateLogementDto,
-  ) {
-    const logement = await this.prisma.logement.findFirst({
-      where: { id, userId },
+  async update(id: number, updateLogementDto: UpdateLogementDto) {
+    const logement = await this.prisma.logement.findUnique({
+      where: { id },
     });
 
     if (!logement) {
@@ -74,21 +48,12 @@ export class LogementsService {
     return this.prisma.logement.update({
       where: { id },
       data: updateLogementDto,
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            coproprieteId: true,
-          },
-        },
-      },
     });
   }
 
-  async remove(id: number, userId: number) {
-    const logement = await this.prisma.logement.findFirst({
-      where: { id, userId },
+  async remove(id: number) {
+    const logement = await this.prisma.logement.findUnique({
+      where: { id },
     });
 
     if (!logement) {
