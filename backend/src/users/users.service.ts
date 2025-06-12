@@ -14,91 +14,89 @@ export class UsersService {
       data: {
         ...createUserDto,
         password: hashedPassword,
-        role: 'basic',
-        coproprieteId: createUserDto.coproprieteId, // À configurer
       },
     });
   }
 
   async findAll(coproprieteId: string) {
     return this.prisma.user.findMany({
-      where: {
-        coproprieteId: coproprieteId,
-        role: 'basic', // N'afficher que les utilisateurs de rôle basic
-      },
+      where: { coproprieteId },
       select: {
         id: true,
         email: true,
-        name: true,
-        tantieme: true,
-        advanceCharges: true,
-        waterMeterOld: true,
-        waterMeterNew: true,
-        role: true,
         coproprieteId: true,
-        createdAt: true,
-        updatedAt: true,
+        logements: {
+          select: {
+            id: true,
+            name: true,
+            tantieme: true,
+            advanceCharges: true,
+            waterMeterOld: true,
+            waterMeterNew: true,
+          },
+        },
       },
     });
   }
 
-  async findOne(id: string, coproprieteId: string) {
-    const user = await this.prisma.user.findUnique({
+  async findOne(id: number, coproprieteId: string) {
+    const user = await this.prisma.user.findFirst({
       where: { id, coproprieteId },
       select: {
         id: true,
         email: true,
-        name: true,
-        tantieme: true,
-        advanceCharges: true,
-        waterMeterOld: true,
-        waterMeterNew: true,
-        role: true,
         coproprieteId: true,
-        createdAt: true,
-        updatedAt: true,
+        logements: {
+          select: {
+            id: true,
+            name: true,
+            tantieme: true,
+            advanceCharges: true,
+            waterMeterOld: true,
+            waterMeterNew: true,
+          },
+        },
       },
     });
 
     if (!user) {
-      throw new NotFoundException(
-        `Utilisateur avec l'ID ${id} non trouvé dans cette copropriété`,
-      );
+      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé`);
     }
 
     return user;
   }
 
   async update(
-    id: string,
+    id: number,
     updateUserDto: UpdateUserDto,
     coproprieteId: string,
   ) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id, coproprieteId },
     });
 
     if (!user) {
-      throw new NotFoundException(
-        `Utilisateur avec l'ID ${id} non trouvé dans cette copropriété`,
-      );
+      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé`);
+    }
+
+    const data: any = { ...updateUserDto };
+    if (updateUserDto.password) {
+      data.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
     return this.prisma.user.update({
       where: { id },
-      data: updateUserDto,
+      data,
     });
   }
 
-  async remove(id: string, coproprieteId: string) {
-    const user = await this.prisma.user.findUnique({
+  async remove(id: number, coproprieteId: string) {
+    const user = await this.prisma.user.findFirst({
       where: { id, coproprieteId },
     });
 
     if (!user) {
-      throw new NotFoundException(
-        `Utilisateur avec l'ID ${id} non trouvé dans cette copropriété`,
-      );
+      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé`);
     }
 
     return this.prisma.user.delete({

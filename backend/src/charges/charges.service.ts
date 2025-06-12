@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateChargeDto } from './dto/create-charge.dto';
+import { CreateChargeDto, ChargeType } from './dto/create-charge.dto';
 import { UpdateChargeDto } from './dto/update-charge.dto';
 
 @Injectable()
@@ -11,9 +11,28 @@ export class ChargesService {
     return this.prisma.charge.create({
       data: {
         ...createChargeDto,
-        userId: createChargeDto.userId || null,
+        logementId: createChargeDto.logementId || null,
         startDate: createChargeDto.startDate || new Date(),
         endDate: createChargeDto.endDate || new Date(),
+      },
+      include: {
+        logement: {
+          select: {
+            id: true,
+            name: true,
+            tantieme: true,
+            advanceCharges: true,
+            waterMeterOld: true,
+            waterMeterNew: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                coproprieteId: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -29,12 +48,22 @@ export class ChargesService {
         endDate: true,
         description: true,
         waterUnitPrice: true,
-        userId: true,
-        user: {
+        logementId: true,
+        logement: {
           select: {
             id: true,
             name: true,
-            email: true,
+            tantieme: true,
+            advanceCharges: true,
+            waterMeterOld: true,
+            waterMeterNew: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                coproprieteId: true,
+              },
+            },
           },
         },
       },
@@ -52,12 +81,22 @@ export class ChargesService {
         startDate: true,
         endDate: true,
         description: true,
-        userId: true,
-        user: {
+        logementId: true,
+        logement: {
           select: {
             id: true,
             name: true,
-            email: true,
+            tantieme: true,
+            advanceCharges: true,
+            waterMeterOld: true,
+            waterMeterNew: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                coproprieteId: true,
+              },
+            },
           },
         },
       },
@@ -83,7 +122,26 @@ export class ChargesService {
       where: { id },
       data: {
         ...updateChargeDto,
-        userId: updateChargeDto.userId || null,
+        logementId: updateChargeDto.logementId || null,
+      },
+      include: {
+        logement: {
+          select: {
+            id: true,
+            name: true,
+            tantieme: true,
+            advanceCharges: true,
+            waterMeterOld: true,
+            waterMeterNew: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                coproprieteId: true,
+              },
+            },
+          },
+        },
       },
     });
   }

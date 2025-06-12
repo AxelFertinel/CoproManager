@@ -14,21 +14,32 @@ datasource db {
 }
 
 model User {
-  id              String    @id @default(uuid())
+  id              Int       @id @default(autoincrement())
   email           String    @unique
+  password        String
+  coproprieteId   String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  logements       Logement[]
+
+  @@map("users")
+}
+
+model Logement {
+  id              Int       @id @default(autoincrement())
   name            String
   tantieme        Float
   advanceCharges  Float     @default(0)
   waterMeterOld   Float     @default(0)
   waterMeterNew   Float     @default(0)
-  password        String
-  role            String    @default("basic")
-  coproprieteId   String
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id])
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   charges         Charge[]
+  calculations    Calculation[]
 
-  @@map("users")
+  @@map("logements")
 }
 
 model Charge {
@@ -42,13 +53,16 @@ model Charge {
   waterUnitPrice    Float?    @default(2.9)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  userId            String?
-  user              User?     @relation(fields: [userId], references: [id])
+  logementId        Int?
+  logement          Logement? @relation(fields: [logementId], references: [id])
+
+  @@map("charges")
 }
 
 model Calculation {
   id                Int       @id @default(autoincrement())
-  userId            Int
+  logementId        Int
+  logement          Logement  @relation(fields: [logementId], references: [id])
   waterAmount       Float
   insuranceAmount   Float
   bankAmount        Float
@@ -57,6 +71,8 @@ model Calculation {
   date              DateTime  @default(now())
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+
+  @@map("calculations")
 }
 
 enum ChargeType {

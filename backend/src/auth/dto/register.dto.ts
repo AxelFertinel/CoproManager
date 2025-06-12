@@ -1,9 +1,4 @@
-import { IsEmail, IsString, MinLength, IsEnum } from 'class-validator';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  BASIC = 'basic',
-}
+import { IsEmail, IsString, MinLength, IsUUID } from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -13,9 +8,6 @@ export class RegisterDto {
   @MinLength(6)
   password: string;
 
-  @IsEnum(UserRole)
-  role: UserRole;
-
-  @IsString()
+  @IsUUID()
   coproprieteId: string;
 }

@@ -31,20 +31,13 @@ export class AuthService {
       data: {
         email: registerDto.email,
         password: hashedPassword,
-        role: registerDto.role,
         coproprieteId: registerDto.coproprieteId,
-        name: 'Nouvel utilisateur',
-        tantieme: 0,
-        advanceCharges: 0,
-        waterMeterOld: 0,
-        waterMeterNew: 0,
       },
     });
 
     const payload = {
       sub: user.id,
       email: user.email,
-      role: user.role,
       coproprieteId: user.coproprieteId,
     };
     return {
@@ -52,8 +45,6 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
-        name: user.name,
         coproprieteId: user.coproprieteId,
       },
     };
@@ -80,7 +71,6 @@ export class AuthService {
     const payload = {
       sub: user.id,
       email: user.email,
-      role: user.role,
       coproprieteId: user.coproprieteId,
     };
     return {
@@ -88,31 +78,33 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
-        name: user.name,
         coproprieteId: user.coproprieteId,
       },
     };
   }
 
-  async logout(userId: string) {
+  async logout(userId: number) {
     // Dans une implémentation plus avancée, on pourrait invalider le token
     return { message: 'Déconnexion réussie' };
   }
 
-  async getCurrentUser(userId: string) {
+  async getCurrentUser(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
         email: true,
-        role: true,
-        name: true,
-        tantieme: true,
-        advanceCharges: true,
-        waterMeterOld: true,
-        waterMeterNew: true,
         coproprieteId: true,
+        logements: {
+          select: {
+            id: true,
+            name: true,
+            tantieme: true,
+            advanceCharges: true,
+            waterMeterOld: true,
+            waterMeterNew: true,
+          },
+        },
       },
     });
 

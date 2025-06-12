@@ -27,13 +27,13 @@ export class CalculationsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.calculationsService.findOne(+id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCalculationDto: UpdateCalculationDto,
   ) {
     return this.calculationsService.update(+id, updateCalculationDto);

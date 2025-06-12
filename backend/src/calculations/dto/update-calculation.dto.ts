@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCalculationDto } from './create-calculation.dto';
+import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
+import { CalculateChargesDto } from './calculate-charges.dto';
 
-export class UpdateCalculationDto extends PartialType(CreateCalculationDto) {}
+export class UpdateCalculationDto extends CalculateChargesDto {}

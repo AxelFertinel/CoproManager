@@ -36,14 +36,14 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
+  findOne(@Param('id') id: number, @Request() req) {
     const adminCoproId = req.user.coproprieteId;
     return this.usersService.findOne(id, adminCoproId);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
     @Request() req,
   ) {
@@ -52,7 +52,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Request() req) {
+  remove(@Param('id') id: number, @Request() req) {
     const adminCoproId = req.user.coproprieteId;
     return this.usersService.remove(id, adminCoproId);
   }

@@ -6,6 +6,7 @@ import {
   Min,
   IsDate,
   IsOptional,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -44,9 +45,9 @@ export class CreateChargeDto {
   @IsNotEmpty()
   endDate: Date;
 
-  @IsNumber()
+  @IsUUID()
   @IsOptional()
-  userId?: number;
+  logementId?: number;
 
   @IsNumber()
   @Min(0)

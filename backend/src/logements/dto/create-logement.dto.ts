@@ -1,24 +1,6 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Min,
-  MinLength,
-  IsOptional,
-  IsUUID,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 
-export class CreateUserDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @IsString()
-  @MinLength(6)
-  @IsNotEmpty()
-  password: string;
-
+export class CreateLogementDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -43,7 +25,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   waterMeterNew: number;
 
-  @IsUUID()
+  @IsNumber()
   @IsNotEmpty()
-  coproprieteId: string;
+  userId: number;
 }
