@@ -1,17 +1,8 @@
-export type UserRole = "ADMIN" | "BASIC";
+export type UserRole = "ADMIN" | "USER";
 
 export interface User {
-    id: string;
-    email: string;
     role: UserRole;
     coproprieteId: string;
-    createdAt: string;
-    updatedAt: string;
-    name?: string;
-    tantieme?: number;
-    advanceCharges?: number;
-    waterMeterOld?: number;
-    waterMeterNew?: number;
 }
 
 export interface AuthState {
@@ -25,9 +16,11 @@ export interface LoginCredentials {
     password: string;
 }
 
-export interface RegisterData extends LoginCredentials {
+export interface RegisterData {
+    email: string;
+    password: string;
+    coproprieteId: string;
     role: UserRole;
-    coproprieteId: `${string}-${string}-${string}-${string}-${string}`;
 }
 
 export interface AuthResponse {

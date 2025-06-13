@@ -119,7 +119,7 @@ export default function LogementFormPage() {
     };
 
     return (
-        <div className="container mx-auto py-10">
+        <div>
             <Card className="bg-white shadow-lg max-w-2xl mx-auto">
                 <CardHeader className="space-y-1 border-b pb-6">
                     <CardTitle className="text-2xl font-bold">

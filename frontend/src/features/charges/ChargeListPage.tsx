@@ -15,7 +15,7 @@ export function ChargeListPage() {
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div >
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Charges</h1>
                 <Link to="/charges/new">

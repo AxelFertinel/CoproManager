@@ -4,26 +4,26 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 222.2 84% 4.9%;
+        --background: 30 33% 97%;
+        --foreground: 0 0% 20%;
 
         --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
+        --card-foreground: 0 0% 20%;
 
         --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
+        --popover-foreground: 0 0% 20%;
 
         --primary: 30 90% 50%;
         --primary-foreground: 0 0% 100%;
 
         --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
+        --secondary-foreground: 0 0% 20%;
 
         --muted: 210 40% 96.1%;
         --muted-foreground: 215.4 16.3% 46.9%;
 
         --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
+        --accent-foreground: 0 0% 20%;
 
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 210 40% 98%;
@@ -34,9 +34,9 @@
 
         --radius: 0.5rem;
 
-        font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+        font-family: "Poppins", system-ui, Avenir, Helvetica, Arial, sans-serif;
         line-height: 1.5;
-        font-weight: 400;
+        font-weight: 700;
 
         color-scheme: light dark;
         font-synthesis: none;
@@ -47,28 +47,28 @@
 
     .dark {
         --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
+        --foreground: 0 0% 20%;
 
         --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
+        --card-foreground: 0 0% 20%;
 
         --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
+        --popover-foreground: 0 0% 20%;
 
         --primary: 30 90% 50%;
-        --primary-foreground: 222.2 47.4% 11.2%;
+        --primary-foreground: 0 0% 20%;
 
         --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
+        --secondary-foreground: 0 0% 20%;
 
         --muted: 217.2 32.6% 17.5%;
         --muted-foreground: 215 20.2% 65.1%;
 
         --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
+        --accent-foreground: 0 0% 20%;
 
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
+        --destructive-foreground: 0 0% 20%;
 
         --border: 217.2 32.6% 30%;
         --input: 217.2 32.6% 30%;
@@ -83,6 +83,7 @@
         margin: 0;
         padding: 0;
         overflow-x: hidden;
+        background-color: #fdf7ef;
     }
 
     body {
@@ -94,17 +95,20 @@
     } */
 
     a {
-        font-weight: 500;
-        color: black;
+        font-weight: 700;
+        color: #333333;
         text-decoration: inherit;
     }
     a:hover {
-        color: black;
+        color: #333333;
     }
 
     h1 {
-        font-size: 3.2em;
-        line-height: 1.1;
+        @apply text-2xl font-bold;
+    }
+
+    p {
+        font-size: 1rem;
     }
 
     button {
@@ -112,14 +116,11 @@
         border: 1px solid transparent;
         padding: 0.6em 1.2em;
         font-size: 1em;
-        font-weight: 500;
+        font-weight: 700;
         font-family: inherit;
         background-color: #1a1a1a;
         cursor: pointer;
-        transition: border-color 0.25s;
-    }
-    button:hover {
-        border-color: #646cff;
+        transition: background-color 0.25s;
     }
     button:focus,
     button:focus-visible {
@@ -128,11 +129,11 @@
 
     @media (prefers-color-scheme: light) {
         :root {
-            color: #213547;
-            background-color: #ffffff;
+            color: #333333;
+            background-color: #fdf7ef;
         }
         a:hover {
-            color: hsl(30 90% 40%);
+            color: #333333;
         }
         button {
             background-color: #f9f9f9;

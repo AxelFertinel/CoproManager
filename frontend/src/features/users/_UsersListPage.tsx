@@ -68,7 +68,7 @@ export default function LogementsListPage() {
                 </div>
             ) : logements && logements.length === 0 ? (
                 <div className="text-center py-10">
-                    <p className="text-lg text-muted-foreground">
+                    <p className="text-muted-foreground">
                         Aucun logement trouvé. Ajoutez un nouveau logement pour
                         commencer.
                     </p>

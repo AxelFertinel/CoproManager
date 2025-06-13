@@ -153,7 +153,7 @@ export default function ChargeFormPage() {
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="mx-auto py-10">
             <Card className="bg-white shadow-lg max-w-2xl mx-auto">
                 <CardHeader className="space-y-1 border-b pb-6">
                     <CardTitle className="text-2xl font-bold">

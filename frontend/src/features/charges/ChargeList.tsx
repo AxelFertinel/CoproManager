@@ -63,7 +63,7 @@ export default function ChargeList({ charges }: ChargeListProps) {
     if (charges.length === 0) {
         return (
             <div className="text-center py-10">
-                <p className="text-lg text-muted-foreground">
+                <p className="text-muted-foreground">
                     Aucune charge trouvée. Ajoutez une nouvelle charge pour
                     commencer.
                 </p>

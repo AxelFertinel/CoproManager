@@ -36,10 +36,12 @@ class AuthService {
                     this.TOKEN_KEY,
                     response.data.access_token
                 );
-                localStorage.setItem(
-                    this.USER_KEY,
-                    JSON.stringify(response.data.user)
-                );
+                // Ne stocker que les informations nécessaires
+                const userData = {
+                    role: response.data.user.role,
+                    coproprieteId: response.data.user.coproprieteId,
+                };
+                localStorage.setItem(this.USER_KEY, JSON.stringify(userData));
                 this.emitAuthStatusChange(); // Émettre l'événement après la connexion
             }
             return response.data;
@@ -53,10 +55,12 @@ class AuthService {
                     this.TOKEN_KEY,
                     response.data.access_token
                 );
-                localStorage.setItem(
-                    this.USER_KEY,
-                    JSON.stringify(response.data.user)
-                );
+                // Ne stocker que les informations nécessaires
+                const userData = {
+                    role: response.data.user.role,
+                    coproprieteId: response.data.user.coproprieteId,
+                };
+                localStorage.setItem(this.USER_KEY, JSON.stringify(userData));
                 this.emitAuthStatusChange();
             }
             return response.data;

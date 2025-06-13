@@ -41,15 +41,12 @@ export default function HomePage() {
     ];
 
     return (
-        <div className="container">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+        <div>
+            <div className="mb-5">
                 <h1 className="text-2xl font-bold">
                     Bienvenue dans votre Gestionnaire de Copropriété
                 </h1>
-            </div>
-
-            <div className="mb-8">
-                <p className="text-lg text-muted-foreground">
+                <p className="text-muted-foreground">
                     Cette application vous permet de gérer facilement les
                     charges de votre copropriété. Suivez les étapes ci-dessous
                     pour commencer.

@@ -38,80 +38,91 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle className="text-2xl text-center">
-                        Créer un compte administrateur
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form
-                        onSubmit={handleSubmit(onSubmit)}
-                        className="space-y-4"
-                    >
-                        <div>
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                {...register("email", {
-                                    required: "L'email est requis",
-                                    pattern: {
-                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                        message: "Email invalide",
-                                    },
-                                })}
-                            />
-                            {errors.email && (
-                                <p className="text-sm text-red-500 mt-1">
-                                    {errors.email.message}
-                                </p>
-                            )}
+        <div className="flex min-h-screen items-center justify-center bg-[#fdf7ef] sm:px-6 lg:px-8">
+            <div className="w-full max-w-md space-y-8">
+                <div className="flex justify-center">
+                    <img
+                        src="/logo.png"
+                        alt="CoproManager"
+                        className="h-60 mb-4"
+                    />
+                </div>
+                <Card className="w-full max-w-md">
+                    <CardHeader>
+                        <div className="flex flex-col items-center">
+                            <h1>Créer un compte</h1>
                         </div>
-
-                        <div>
-                            <Label htmlFor="password">Mot de passe</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                {...register("password", {
-                                    required: "Le mot de passe est requis",
-                                    minLength: {
-                                        value: 6,
-                                        message:
-                                            "Le mot de passe doit contenir au moins 6 caractères",
-                                    },
-                                })}
-                            />
-                            {errors.password && (
-                                <p className="text-sm text-red-500 mt-1">
-                                    {errors.password.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={isSubmitting}
+                    </CardHeader>
+                    <CardContent>
+                        <form
+                            onSubmit={handleSubmit(onSubmit)}
+                            className="space-y-4"
                         >
-                            {isSubmitting ? "Création..." : "Créer un compte"}
-                        </Button>
-                    </form>
-                </CardContent>
-                <CardFooter className="flex justify-center">
-                    <p className="text-sm text-muted-foreground">
-                        Déjà un compte ?{" "}
-                        <Link
-                            to="/login"
-                            className="text-primary hover:underline"
-                        >
-                            Se connecter
-                        </Link>
-                    </p>
-                </CardFooter>
-            </Card>
+                            <div>
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    {...register("email", {
+                                        required: "L'email est requis",
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Email invalide",
+                                        },
+                                    })}
+                                />
+                                {errors.email && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                        {errors.email.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <Label htmlFor="password">Mot de passe</Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    {...register("password", {
+                                        required: "Le mot de passe est requis",
+                                        minLength: {
+                                            value: 6,
+                                            message:
+                                                "Le mot de passe doit contenir au moins 6 caractères",
+                                        },
+                                    })}
+                                />
+                                {errors.password && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                        {errors.password.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting
+                                    ? "Création..."
+                                    : "Créer un compte"}
+                            </Button>
+                        </form>
+                    </CardContent>
+                    <CardFooter className="flex justify-center">
+                        <p className="text-sm text-muted-foreground">
+                            Déjà un compte ?{" "}
+                            <Link
+                                to="/login"
+                                className="text-primary hover:underline"
+                            >
+                                Se connecter
+                            </Link>
+                        </p>
+                    </CardFooter>
+                </Card>
+            </div>
         </div>
     );
 }
