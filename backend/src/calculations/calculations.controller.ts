@@ -6,13 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { CalculationsService, CalculationResult } from './calculations.service';
 import { CreateCalculationDto } from './dto/create-calculation.dto';
 import { UpdateCalculationDto } from './dto/update-calculation.dto';
 import { CalculateChargesDto } from './dto/calculate-charges.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('calculations')
+@UseGuards(JwtAuthGuard)
 export class CalculationsController {
   constructor(private readonly calculationsService: CalculationsService) {}
 
@@ -47,7 +51,13 @@ export class CalculationsController {
   @Post('run')
   async runCalculations(
     @Body() calculateChargesDto: CalculateChargesDto,
+    @Request() req,
   ): Promise<CalculationResult[]> {
-    return this.calculationsService.calculateCharges(calculateChargesDto);
+    const coproprieteId = req.user.coproprieteId;
+
+    return this.calculationsService.calculateCharges(
+      calculateChargesDto,
+      coproprieteId,
+    );
   }
 }

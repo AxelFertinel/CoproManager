@@ -1,4 +1,5 @@
 import { IsString, IsNumber, IsDate, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdateChargeDto {
   @IsString()
@@ -10,14 +11,17 @@ export class UpdateChargeDto {
   amount?: number;
 
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   date?: Date;
 
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   startDate?: Date;
 
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   endDate?: Date;
 

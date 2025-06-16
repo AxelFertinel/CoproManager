@@ -188,7 +188,7 @@ export default function LogementFormPage() {
                                 <Input
                                     id="waterMeterOld"
                                     type="number"
-                                    step="0.01"
+                                    step="0.001"
                                     {...register("waterMeterOld", {
                                         valueAsNumber: true,
                                     })}
@@ -203,7 +203,7 @@ export default function LogementFormPage() {
                                 <Input
                                     id="waterMeterNew"
                                     type="number"
-                                    step="0.01"
+                                    step="0.001"
                                     {...register("waterMeterNew", {
                                         valueAsNumber: true,
                                     })}

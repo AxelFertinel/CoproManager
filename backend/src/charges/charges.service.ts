@@ -54,12 +54,14 @@ export class ChargesService {
   }
 
   update(id: number, updateChargeDto: UpdateChargeDto) {
-    const { coproprieteId, ...data } = updateChargeDto;
+    const { date, startDate, endDate, ...rest } = updateChargeDto;
     return this.prisma.charge.update({
       where: { id },
       data: {
-        ...data,
-        ...(coproprieteId && { coproprieteId }),
+        ...rest,
+        date: date ? new Date(date) : undefined,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined,
       },
     });
   }

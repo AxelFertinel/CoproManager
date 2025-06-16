@@ -43,13 +43,15 @@ const formatDate = (dateString: string) => {
 };
 
 interface CalculationResult {
-    user: {
+    logement: {
         id: number;
         name: string;
         tantieme: number;
-        advanceCharges: number; // monthly advance charge
+        advanceCharges: number;
         waterMeterOld: number;
         waterMeterNew: number;
+        email: string;
+        coproprieteId: string;
     };
     totalWaterBill: number;
     waterUnitPrice: number;
@@ -78,13 +80,6 @@ type CalculationFormData = z.infer<typeof calculationSchema>;
 
 export default function CalculationsPage() {
     const [results, setResults] = useState<CalculationResult[] | null>(null);
-
-    const { data: users, isLoading: areUsersLoading } = useQuery<User[], Error>(
-        {
-            queryKey: ["users"],
-            queryFn: usersService.getAll,
-        }
-    );
 
     const { data: charges, isLoading: areChargesLoading } = useQuery<
         Charge[],
@@ -199,18 +194,23 @@ export default function CalculationsPage() {
         results.forEach((result) => {
             // Titre du copropriétaire
             doc.setFontSize(16);
-            doc.text(`COPROPRIÉTAIRE ${result.user.name}`, pageWidth / 2, y, {
-                align: "center",
-            });
+            doc.text(
+                `COPROPRIÉTAIRE ${result.logement.name}`,
+                pageWidth / 2,
+                y,
+                {
+                    align: "center",
+                }
+            );
             y += 10;
 
             // Détails
             doc.setFontSize(12);
-            doc.text(`Tantième : ${result.user.tantieme}%`, 20, y);
+            doc.text(`Tantième : ${result.logement.tantieme}%`, 20, y);
             y += 10;
 
             doc.text(
-                `Avance sur charges : ${result.user.advanceCharges} × ${
+                `Avance sur charges : ${result.logement.advanceCharges} × ${
                     result.numberOfMonthsForAdvance
                 } mois = ${result.calculatedAdvance.toFixed(2)}€`,
                 20,
@@ -219,8 +219,8 @@ export default function CalculationsPage() {
             y += 10;
 
             doc.text(
-                `Consommation eau : (${result.user.waterMeterNew} - ${
-                    result.user.waterMeterOld
+                `Consommation eau : (${result.logement.waterMeterNew} - ${
+                    result.logement.waterMeterOld
                 }) × ${result.waterUnitPrice.toFixed(2)} = ${Math.abs(
                     result.calculatedWaterConsumption
                 ).toFixed(2)}€`,
@@ -233,7 +233,7 @@ export default function CalculationsPage() {
                 `Assurance : (${result.totalInsuranceAmount.toFixed(
                     2
                 )} ÷ 100) × ${
-                    result.user.tantieme
+                    result.logement.tantieme
                 } = ${result.calculatedInsuranceShare.toFixed(2)}€`,
                 20,
                 y
@@ -244,7 +244,7 @@ export default function CalculationsPage() {
                 `Frais bancaires : (${result.totalBankFees.toFixed(
                     2
                 )} ÷ 100) × ${
-                    result.user.tantieme
+                    result.logement.tantieme
                 } = ${result.calculatedBankFeesShare.toFixed(2)}€`,
                 20,
                 y
@@ -292,21 +292,24 @@ export default function CalculationsPage() {
         runCalculationsMutation.mutate(data);
     };
 
-    if (areUsersLoading || areChargesLoading) {
+    if (areChargesLoading) {
         return (
             <div className="text-center py-10">Chargement des données...</div>
         );
     }
 
     return (
-        <div >
+        <div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold">Calcul des charges</h1>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <Card className="md:col-span-1">
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="md:col-span-1">
+                    <form
+                        className="rounded-lg border bg-card text-card-foreground shadow-sm md:col-span-1"
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
                         <CardContent className="space-y-4">
                             {/* Water Bill Select */}
                             <div className="space-y-2">
@@ -472,32 +475,32 @@ export default function CalculationsPage() {
                             </Button>
                         </CardFooter>
                     </form>
-                </Card>
+                </div>
 
                 {results && results.length > 0 && (
                     <div className="md:col-span-2 space-y-8">
                         {results.map((result) => (
-                            <Card key={result.user.id}>
+                            <Card key={result.logement.id}>
                                 <CardHeader>
                                     <CardTitle>
-                                        Calculs pour {result.user.name}
+                                        Calculs pour {result.logement.name}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <p>
                                         <strong>Tantième :</strong>{" "}
-                                        {result.user.tantieme}%
+                                        {result.logement.tantieme}%
                                     </p>
                                     <p>
                                         <strong>Avance sur charges :</strong>{" "}
-                                        {result.user.advanceCharges} ×{" "}
+                                        {result.logement.advanceCharges} ×{" "}
                                         {result.numberOfMonthsForAdvance} mois ={" "}
                                         {result.calculatedAdvance.toFixed(2)}€
                                     </p>
                                     <p>
                                         <strong>Consommation eau :</strong> (
-                                        {result.user.waterMeterNew} -{" "}
-                                        {result.user.waterMeterOld}) ×{" "}
+                                        {result.logement.waterMeterNew} -{" "}
+                                        {result.logement.waterMeterOld}) ×{" "}
                                         {result.waterUnitPrice.toFixed(2)} ={" "}
                                         {Math.abs(
                                             result.calculatedWaterConsumption
@@ -507,7 +510,7 @@ export default function CalculationsPage() {
                                     <p>
                                         <strong>Assurance :</strong> (
                                         {result.totalInsuranceAmount.toFixed(2)}{" "}
-                                        ÷ 100) × {result.user.tantieme} ={" "}
+                                        ÷ 100) × {result.logement.tantieme} ={" "}
                                         {result.calculatedInsuranceShare.toFixed(
                                             2
                                         )}
@@ -516,7 +519,7 @@ export default function CalculationsPage() {
                                     <p>
                                         <strong>Frais bancaires :</strong> (
                                         {result.totalBankFees.toFixed(2)} ÷ 100)
-                                        × {result.user.tantieme} ={" "}
+                                        × {result.logement.tantieme} ={" "}
                                         {result.calculatedBankFeesShare.toFixed(
                                             2
                                         )}

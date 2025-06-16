@@ -18,7 +18,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "../../components/ui/select";
+} from "../../components/ui/Select";
 import { ChargeType } from "../../services/api";
 import { useNavigate, useParams } from "react-router-dom";
 import { chargesService } from "../../services/charges";
@@ -307,7 +307,7 @@ export default function ChargeFormPage() {
                                         render={({ field }) => (
                                             <input
                                                 type="number"
-                                                step="any"
+                                                step="0.01"
                                                 {...field}
                                                 onChange={(e) =>
                                                     field.onChange(

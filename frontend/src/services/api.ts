@@ -50,6 +50,8 @@ export interface Charge {
     startDate: string;
     endDate: string;
     waterUnitPrice?: number;
+    waterMeterOld?: number;
+    waterMeterNew?: number;
     description?: string;
     createdAt: string;
     updatedAt: string;

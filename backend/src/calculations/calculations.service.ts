@@ -12,11 +12,8 @@ export interface CalculationResult {
     advanceCharges: number;
     waterMeterOld: number;
     waterMeterNew: number;
-    user: {
-      id: number;
-      email: string;
-      coproprieteId: string;
-    };
+    email: string;
+    coproprieteId: string;
   };
   totalWaterBill: number;
   waterUnitPrice: number;
@@ -108,6 +105,7 @@ export class CalculationsService {
 
   async calculateCharges(
     dto: CalculateChargesDto,
+    userCoproprieteId: string,
   ): Promise<CalculationResult[]> {
     const {
       totalWaterBill,
@@ -115,26 +113,16 @@ export class CalculationsService {
       totalInsuranceAmount,
       totalBankFees,
       numberOfMonthsForAdvance,
-      logementId,
     } = dto;
 
-    let logements;
-    if (logementId) {
-      const logement = await this.prisma.logement.findUnique({
-        where: { id: logementId },
-      });
-      if (!logement) {
-        throw new Error('Logement non trouvé');
-      }
-      logements = [logement];
-    } else {
-      logements = await this.prisma.logement.findMany({});
-    }
+    const logements = await this.prisma.logement.findMany({
+      where: { coproprieteId: userCoproprieteId },
+    });
 
     const results: CalculationResult[] = [];
 
     for (const logement of logements) {
-      // 1. Avance sur charges
+      // 1. Avance ur charge
       const calculatedAdvance =
         logement.advanceCharges * numberOfMonthsForAdvance;
 
@@ -178,11 +166,8 @@ export class CalculationsService {
           advanceCharges: logement.advanceCharges,
           waterMeterOld: logement.waterMeterOld,
           waterMeterNew: logement.waterMeterNew,
-          user: {
-            id: logement.user.id,
-            email: logement.user.email,
-            coproprieteId: logement.user.coproprieteId,
-          },
+          email: logement.email,
+          coproprieteId: logement.coproprieteId,
         },
         totalWaterBill,
         waterUnitPrice,
