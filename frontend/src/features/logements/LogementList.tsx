@@ -52,7 +52,8 @@ export default function LogementList({ logements }: LogementListProps) {
         return (
             <div className="text-center py-10">
                 <p className="text-muted-foreground">
-                    Aucun logement n'a encore été ajouté.
+                    Aucun logement n'a encore été ajouté. Ajoutez un nouveau
+                    logment pour commencer.
                 </p>
                 <Link to="/logement/new">
                     <Button className="mt-4">Ajouter un logement</Button>

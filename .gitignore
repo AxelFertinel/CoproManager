@@ -33,7 +33,7 @@ yarn-error.log*
 /backend/dist
 /backend/node_modules
 /backend/.env
-/backend/migration
+/backend/prisma/migration
 # React
 /frontend/node_modules
 /frontend/build

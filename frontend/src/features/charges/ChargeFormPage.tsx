@@ -153,12 +153,6 @@ export default function ChargeFormPage() {
         const formattedData = {
             ...baseData,
             date: new Date(data.date).toISOString(),
-            ...(data.type !== ChargeType.OTHER && {
-                startDate: startDate
-                    ? new Date(startDate).toISOString()
-                    : undefined,
-                endDate: endDate ? new Date(endDate).toISOString() : undefined,
-            }),
         };
 
         if (id) {

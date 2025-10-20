@@ -23,7 +23,7 @@ export default function LogementListPage() {
                         Logements
                     </h1>
                     <p className="text-muted-foreground">
-                        Gérez les logements de votre immeuble.
+                        Gérez les logements de votre copropriété.
                     </p>
                 </div>
                 <Link to="/logement/new">

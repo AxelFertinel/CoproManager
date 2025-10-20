@@ -46,13 +46,13 @@ model Logement {
 }
 
 model Charge {
-  id             Int      @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   type           String // WATER, INSURANCE, BANK
   amount         Float
   date           DateTime
-  startDate      DateTime
-  endDate        DateTime
-  description    String?  @db.Text
+  startDate      DateTime?
+  endDate        DateTime?
+  description    String?   @db.Text
   waterUnitPrice Float?
   coproprieteId  String
 

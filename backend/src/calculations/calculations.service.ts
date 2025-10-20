@@ -49,6 +49,8 @@ export interface NewCalculationResult {
   calculatedWaterConsumption: number;
   calculatedInsuranceShare: number;
   calculatedBankFeesShare: number;
+  calculatedOtherCharges: number;
+  totalOtherCharges?: number;
   totalCharges: number;
   finalBalance: number;
   status: 'to_pay' | 'to_reimburse' | 'balanced';
@@ -142,8 +144,9 @@ export class CalculationsService {
     const bills = await this.prisma.charge.findMany({
       where: {
         coproprieteId: userCoproprieteId,
-        startDate: { gte: startDate },
-        endDate: { lte: endDate },
+        // startDate: { gte: startDate },
+        // endDate: { lte: endDate },
+        date: { gte: startDate, lte: endDate },
       },
     });
 
@@ -158,7 +161,7 @@ export class CalculationsService {
     let waterBillCount = 0;
 
     let totalInsuranceAmount = 0;
-
+    let totalOtherCharges = 0;
     let totalBankFees = 0;
 
     const monthsBetween = (
@@ -184,13 +187,21 @@ export class CalculationsService {
       }
 
       if (bill.type === 'INSURANCE') {
-        const months = monthsBetween(bill.startDate, bill.endDate);
-        totalInsuranceAmount += (bill.amount ?? 0) * months;
+        if (bill.startDate && bill.endDate) {
+          const months = monthsBetween(bill.startDate, bill.endDate);
+          totalInsuranceAmount += (bill.amount ?? 0) * months;
+        }
       }
 
       if (bill.type === 'BANK') {
-        const months = monthsBetween(bill.startDate, bill.endDate);
-        totalBankFees += (bill.amount ?? 0) * months;
+        if (bill.startDate && bill.endDate) {
+          const months = monthsBetween(bill.startDate, bill.endDate);
+          totalBankFees += (bill.amount ?? 0) * months;
+        }
+      }
+
+      if (bill.type === 'OTHER') {
+        totalOtherCharges += bill.amount ?? 0;
       }
     }
 
@@ -215,13 +226,18 @@ export class CalculationsService {
       const calculatedBankFeesShare = parseFloat(
         ((totalBankFees / 100) * logement.tantieme).toFixed(2),
       );
+      // 5. Quote-part autre frais
+      const calculatedOtherCharges = parseFloat(
+        ((totalOtherCharges / 100) * logement.tantieme).toFixed(2),
+      );
 
-      // 5. Solde final
+      // 6. Solde final
       const totalCharges = parseFloat(
         (
           calculatedWaterConsumption +
           calculatedInsuranceShare +
-          calculatedBankFeesShare
+          calculatedBankFeesShare +
+          calculatedOtherCharges
         ).toFixed(2),
       );
       const finalBalance = totalCharges - calculatedAdvance;
@@ -253,6 +269,8 @@ export class CalculationsService {
         calculatedWaterConsumption,
         calculatedInsuranceShare,
         calculatedBankFeesShare,
+        calculatedOtherCharges,
+        totalOtherCharges,
         totalCharges,
         finalBalance: parseFloat(finalBalance.toFixed(2)),
         status,
@@ -261,88 +279,4 @@ export class CalculationsService {
 
     return results;
   }
-
-  // async calculateCharges(
-  //   dto: CalculateChargesDto,
-  //   userCoproprieteId: string,
-  // ): Promise<CalculationResult[]> {
-  //   const {
-  //     totalWaterBill,
-  //     waterUnitPrice,
-  //     totalInsuranceAmount,
-  //     totalBankFees,
-  //     numberOfMonthsForAdvance,
-  //   } = dto;
-
-  //   const logements = await this.prisma.logement.findMany({
-  //     where: { coproprieteId: userCoproprieteId },
-  //   });
-
-  //   const results: CalculationResult[] = [];
-
-  //   for (const logement of logements) {
-  //     // 1. Avance ur charge
-  //     const calculatedAdvance =
-  //       logement.advanceCharges * numberOfMonthsForAdvance;
-
-  //     // 2. Consommation d'eau
-  //     const waterConsumptionUnits =
-  //       logement.waterMeterNew - logement.waterMeterOld;
-  //     const calculatedWaterConsumption = waterConsumptionUnits * waterUnitPrice;
-
-  //     // 3. Quote-part assurance
-  //     const calculatedInsuranceShare = parseFloat(
-  //       ((totalInsuranceAmount / 100) * logement.tantieme).toFixed(2),
-  //     );
-
-  //     // 4. Quote-part frais bancaires
-  //     const calculatedBankFeesShare = parseFloat(
-  //       ((totalBankFees / 100) * logement.tantieme).toFixed(2),
-  //     );
-
-  //     // 5. Solde final
-  //     const totalCharges = parseFloat(
-  //       (
-  //         calculatedWaterConsumption +
-  //         calculatedInsuranceShare +
-  //         calculatedBankFeesShare
-  //       ).toFixed(2),
-  //     );
-  //     const finalBalance = totalCharges - calculatedAdvance;
-
-  //     let status: 'to_pay' | 'to_reimburse' | 'balanced' = 'balanced';
-  //     if (finalBalance > 0) {
-  //       status = 'to_pay';
-  //     } else if (finalBalance < 0) {
-  //       status = 'to_reimburse';
-  //     }
-
-  //     results.push({
-  //       logement: {
-  //         id: logement.id,
-  //         name: logement.name,
-  //         tantieme: logement.tantieme,
-  //         advanceCharges: logement.advanceCharges,
-  //         waterMeterOld: logement.waterMeterOld,
-  //         waterMeterNew: logement.waterMeterNew,
-  //         email: logement.email,
-  //         coproprieteId: logement.coproprieteId,
-  //       },
-  //       totalWaterBill,
-  //       waterUnitPrice,
-  //       totalInsuranceAmount,
-  //       totalBankFees,
-  //       numberOfMonthsForAdvance,
-  //       calculatedAdvance,
-  //       calculatedWaterConsumption,
-  //       calculatedInsuranceShare,
-  //       calculatedBankFeesShare,
-  //       totalCharges,
-  //       finalBalance: parseFloat(finalBalance.toFixed(2)),
-  //       status,
-  //     });
-  //   }
-
-  //   return results;
-  // }
 }

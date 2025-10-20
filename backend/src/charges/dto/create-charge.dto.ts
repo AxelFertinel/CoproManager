@@ -26,18 +26,16 @@ export class CreateChargeDto {
   date: string;
 
   @IsDateString()
+  @IsOptional()
   startDate: string;
 
   @IsDateString()
+  @IsOptional()
   endDate: string;
 
   @IsString()
   @IsOptional()
   description?: string;
-
-  @IsUUID()
-  @IsOptional()
-  logementId?: number;
 
   @IsNumber()
   @Min(0)

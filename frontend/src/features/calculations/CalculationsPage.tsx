@@ -39,16 +39,30 @@ interface CalculationResult {
     calculatedWaterConsumption: number;
     calculatedInsuranceShare: number;
     calculatedBankFeesShare: number;
+    calculatedOtherCharges: number;
+    totalOtherCharges: number;
     totalCharges: number;
     finalBalance: number;
     status: "to_pay" | "to_reimburse" | "balanced";
 }
 
-const calculationSchema = z.object({
-    startDate: z.string().nonempty("La date de début est requise"),
-    endDate: z.string().nonempty("La date de fin est requise"),
-});
-
+const calculationSchema = z
+    .object({
+        startDate: z.string().min(1, "La date de début est requise"),
+        endDate: z.string().min(1, "La date de fin est requise"),
+    })
+    .refine(
+        (data) => {
+            if (data.startDate && data.endDate) {
+                return new Date(data.startDate) <= new Date(data.endDate);
+            }
+            return true;
+        },
+        {
+            message: "La date de fin doit être postérieure à la date de début",
+            path: ["endDate"],
+        }
+    );
 type CalculationFormData = z.infer<typeof calculationSchema>;
 
 export default function CalculationsPage() {
@@ -57,12 +71,15 @@ export default function CalculationsPage() {
         handleSubmit,
         formState: { errors },
         control,
-        reset,
     } = useForm<CalculationFormData>({
         resolver: zodResolver(calculationSchema),
+        defaultValues: {
+            startDate: "",
+            endDate: "",
+        },
     });
 
-    const runCalculationsMutation = useMutation({
+    const calculChargesMutation = useMutation({
         mutationFn: (data: CalculationFormData) => {
             return api
                 .post<CalculationResult[]>("/calculations/test", {
@@ -94,7 +111,6 @@ export default function CalculationsPage() {
         let y = 20;
 
         results.forEach((result) => {
-            // Titre du copropriétaire
             doc.setFontSize(16);
             doc.text(
                 `COPROPRIÉTAIRE ${result.logement.name}`,
@@ -152,6 +168,19 @@ export default function CalculationsPage() {
                 y
             );
             y += 10;
+            {
+                result.totalOtherCharges > 0 &&
+                    doc.text(
+                        `Autre frais : (${result.totalOtherCharges.toFixed(
+                            2
+                        )} ÷ 100) × ${
+                            result.logement.tantieme
+                        } = ${result.calculatedOtherCharges.toFixed(2)}€`,
+                        20,
+                        y
+                    );
+                result.totalOtherCharges > 0 && (y += 10);
+            }
 
             doc.text(
                 `Total charges : ${result.totalCharges.toFixed(2)}€`,
@@ -200,13 +229,19 @@ export default function CalculationsPage() {
     };
 
     const onSubmit = (data: CalculationFormData) => {
-        runCalculationsMutation.mutate(data);
+        calculChargesMutation.mutate(data);
     };
 
     return (
         <div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-                <h1 className="text-2xl font-bold">Calcul des charges</h1>
+                <div>
+                    <h1 className="text-2xl font-bold">Calcul des charges</h1>
+                    <p className="text-muted-foreground">
+                        Effectuez les calculs des charges pour la copropriété en
+                        quelques clics
+                    </p>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -218,7 +253,9 @@ export default function CalculationsPage() {
                         <CardContent className="space-y-4">
                             {/* Number of Months for Advance Input */}
                             <div className="space-y-2">
-                                <Label htmlFor="startDate">Mois du début</Label>
+                                <Label htmlFor="startDate">
+                                    Choisir le mois du début de votre exercice
+                                </Label>
                                 <Controller
                                     name="startDate"
                                     control={control}
@@ -230,10 +267,17 @@ export default function CalculationsPage() {
                                         />
                                     )}
                                 />
+                                {errors.startDate && (
+                                    <p className="text-red-500 text-sm">
+                                        {errors.startDate.message}
+                                    </p>
+                                )}
                             </div>
                             {/* Number of Months for Advance Input */}
                             <div className="space-y-2">
-                                <Label htmlFor="endDate">Mois du fin</Label>
+                                <Label htmlFor="endDate">
+                                    Choisir le mois de fin de votre exercice
+                                </Label>
                                 <Controller
                                     name="endDate"
                                     control={control}
@@ -245,19 +289,21 @@ export default function CalculationsPage() {
                                         />
                                     )}
                                 />
+                                {errors.endDate && (
+                                    <p className="text-red-500 text-sm">
+                                        {errors.endDate.message}
+                                    </p>
+                                )}
                             </div>
                         </CardContent>
                         <CardFooter className="flex justify-end gap-2">
                             <Button
                                 onClick={handleSubmit(onSubmit)}
-                                disabled={runCalculationsMutation.isPending}
+                                disabled={calculChargesMutation.isPending}
                             >
-                                {runCalculationsMutation.isPending
+                                {calculChargesMutation.isPending
                                     ? "Calcul en cours..."
                                     : "Calculer"}
-                            </Button>
-                            <Button variant="outline" onClick={() => reset()}>
-                                Réinitialiser
                             </Button>
                         </CardFooter>
                     </form>
@@ -277,47 +323,69 @@ export default function CalculationsPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <p>
-                                        <strong>Tantième :</strong>{" "}
+                                        <strong>Tantième :</strong>&nbsp;
                                         {result.logement.tantieme}%
                                     </p>
                                     <p>
-                                        <strong>Avance sur charges :</strong>{" "}
-                                        {result.logement.advanceCharges} ×{" "}
-                                        {result.totalMonth} mois ={" "}
+                                        <strong>Avance sur charges :</strong>
+                                        &nbsp;
+                                        {result.logement.advanceCharges} ×&nbsp;
+                                        {result.totalMonth} mois =&nbsp;
                                         {result.calculatedAdvance.toFixed(2)}€
                                     </p>
                                     <p>
-                                        <strong>Consommation eau :</strong> (
-                                        {result.logement.waterMeterNew} -{" "}
-                                        {result.logement.waterMeterOld}) ×{" "}
-                                        {result.waterUnitPrice.toFixed(2)} ={" "}
+                                        <strong>Consommation eau :</strong>
+                                        &nbsp; ({result.logement.waterMeterNew}-
+                                        {result.logement.waterMeterOld}) ×&nbsp;
+                                        {result.waterUnitPrice.toFixed(2)}
+                                        =&nbsp;
                                         {Math.abs(
                                             result.calculatedWaterConsumption
                                         ).toFixed(2)}
                                         €
                                     </p>
                                     <p>
-                                        <strong>Assurance :</strong> (
-                                        {result.totalInsuranceAmount.toFixed(2)}{" "}
-                                        ÷ 100) × {result.logement.tantieme} ={" "}
+                                        <strong>Assurance :</strong>&nbsp; (
+                                        {result.totalInsuranceAmount.toFixed(2)}
+                                        ÷ 100) × {result.logement.tantieme}
+                                        =&nbsp;
                                         {result.calculatedInsuranceShare.toFixed(
                                             2
                                         )}
                                         €
                                     </p>
                                     <p>
-                                        <strong>Frais bancaires :</strong> (
-                                        {result.totalBankFees.toFixed(2)} ÷ 100)
-                                        × {result.logement.tantieme} ={" "}
+                                        <strong>Frais bancaires :</strong>&nbsp;
+                                        ({result.totalBankFees.toFixed(2)} ÷
+                                        100) ×&nbsp; {result.logement.tantieme}
+                                        =&nbsp;
                                         {result.calculatedBankFeesShare.toFixed(
                                             2
                                         )}
                                         €
                                     </p>
+
+                                    {result.totalOtherCharges > 0 && (
+                                        <p>
+                                            <strong>Autre frais :</strong>&nbsp;
+                                            (
+                                            {result.totalOtherCharges.toFixed(
+                                                2
+                                            )}
+                                            ÷ 100) ×&nbsp;{" "}
+                                            {result.logement.tantieme}
+                                            =&nbsp;
+                                            {result.calculatedOtherCharges.toFixed(
+                                                2
+                                            )}
+                                            €
+                                        </p>
+                                    )}
                                     <p>
-                                        <strong>Avance - charges :</strong>{" "}
-                                        {result.calculatedAdvance} -{" "}
-                                        {result.totalCharges} ={" "}
+                                        <strong>Avance - charges :</strong>
+                                        &nbsp;
+                                        {result.calculatedAdvance} -
+                                        {result.totalCharges} =&nbsp;
                                         {result.finalBalance}€
                                     </p>
 
@@ -328,16 +396,16 @@ export default function CalculationsPage() {
                                                 : "text-green-500"
                                         }`}
                                     >
-                                        <strong>SOLDE :</strong>{" "}
+                                        <strong>SOLDE :</strong>&nbsp;
                                         {Math.abs(result.finalBalance).toFixed(
                                             2
                                         )}
-                                        €{" "}
+                                        €
                                         {result.status === "to_pay"
-                                            ? "à payer"
+                                            ? " à payer"
                                             : result.status === "to_reimburse"
-                                            ? "à rembourser"
-                                            : "équilibré"}
+                                            ? " à rembourser"
+                                            : " équilibré"}
                                     </p>
                                 </CardContent>
                                 <CardFooter>

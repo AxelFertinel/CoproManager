@@ -15,9 +15,14 @@ export function ChargeListPage() {
     }
 
     return (
-        <div >
+        <div>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Charges</h1>
+                <div>
+                    <h1 className="text-2xl font-bold">Charges</h1>
+                    <p className="text-muted-foreground">
+                        Gérez les chages de votre copropriété.
+                    </p>
+                </div>
                 <Link to="/charges/new">
                     <Button>Ajouter une charge</Button>
                 </Link>

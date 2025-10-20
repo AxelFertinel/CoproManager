@@ -17,7 +17,7 @@ export default function HomePage() {
         {
             title: "Gérer les Copropriétaires",
             description:
-                "Ajoutez et gérez les copropriétaires de votre immeuble. Définissez leurs tantièmes et leurs avances sur charges.",
+                "Ajoutez et gérez les copropriétaires de votre immeuble. Définissez leurs tantièmes, leurs avances sur charges et leur relevés de compteur d'eau.",
             icon: <Users className="h-8 w-8" />,
             path: "/logement",
             buttonText: "Gérer les copropriétaires",
