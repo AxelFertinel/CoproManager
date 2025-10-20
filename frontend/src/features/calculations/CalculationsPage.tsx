@@ -51,12 +51,11 @@ interface CalculationResult {
         email: string;
         coproprieteId: string;
     };
-
+    totalMonth: number;
     totalWaterBill: number;
     waterUnitPrice: number;
     totalInsuranceAmount: number;
     totalBankFees: number;
-    numberOfMonthsForAdvance: number;
     calculatedAdvance: number;
     calculatedWaterConsumption: number;
     calculatedInsuranceShare: number;
@@ -67,44 +66,14 @@ interface CalculationResult {
 }
 
 const calculationSchema = z.object({
-    waterBillId: z.string().optional(),
-    insuranceBillId: z.string().optional(),
-    bankFeesBillId: z.string().optional(),
-    numberOfMonthsForAdvance: z
-        .number()
-        .min(1, "Le nombre de mois pour l'avance doit être d'au moins 1."),
+    startDate: z.string().nonempty("La date de début est requise"),
+    endDate: z.string().nonempty("La date de fin est requise"),
 });
 
 type CalculationFormData = z.infer<typeof calculationSchema>;
 
 export default function CalculationsPage() {
     const [results, setResults] = useState<CalculationResult[] | null>(null);
-
-    const { data: charges, isLoading: areChargesLoading } = useQuery<
-        Charge[],
-        Error
-    >({
-        queryKey: ["charges"],
-        queryFn: chargesService.getAll,
-    });
-
-    const waterCharges = React.useMemo(
-        () =>
-            charges?.filter((charge) => charge.type === ChargeType.WATER) || [],
-        [charges]
-    );
-    const insuranceCharges = React.useMemo(
-        () =>
-            charges?.filter((charge) => charge.type === ChargeType.INSURANCE) ||
-            [],
-        [charges]
-    );
-    const bankCharges = React.useMemo(
-        () =>
-            charges?.filter((charge) => charge.type === ChargeType.BANK) || [],
-        [charges]
-    );
-
     const {
         handleSubmit,
         formState: { errors },
@@ -112,66 +81,14 @@ export default function CalculationsPage() {
         reset,
     } = useForm<CalculationFormData>({
         resolver: zodResolver(calculationSchema),
-        defaultValues: {
-            numberOfMonthsForAdvance: 0,
-            waterBillId: undefined,
-            insuranceBillId: undefined,
-            bankFeesBillId: undefined,
-        },
     });
-
-    useEffect(() => {
-        if (charges && !areChargesLoading) {
-            reset({
-                numberOfMonthsForAdvance: 0,
-                waterBillId:
-                    waterCharges.length > 0
-                        ? waterCharges[0]?.id.toString()
-                        : undefined,
-                insuranceBillId:
-                    insuranceCharges.length > 0
-                        ? insuranceCharges[0]?.id.toString()
-                        : undefined,
-                bankFeesBillId:
-                    bankCharges.length > 0
-                        ? bankCharges[0]?.id.toString()
-                        : undefined,
-            });
-        }
-    }, [
-        charges,
-        waterCharges,
-        insuranceCharges,
-        bankCharges,
-        reset,
-        areChargesLoading,
-    ]);
 
     const runCalculationsMutation = useMutation({
         mutationFn: (data: CalculationFormData) => {
-            const selectedWaterCharge = data.waterBillId
-                ? waterCharges.find((c) => c.id === Number(data.waterBillId))
-                : null;
-            const totalWaterBill = selectedWaterCharge?.amount || 0;
-            const waterUnitPrice = selectedWaterCharge?.waterUnitPrice || 0;
-
-            const totalInsuranceAmount = data.insuranceBillId
-                ? insuranceCharges.find(
-                      (c) => c.id === Number(data.insuranceBillId)
-                  )?.amount || 0
-                : 0;
-            const totalBankFees = data.bankFeesBillId
-                ? bankCharges.find((c) => c.id === Number(data.bankFeesBillId))
-                      ?.amount || 0
-                : 0;
-
             return api
-                .post<CalculationResult[]>("/calculations/run", {
-                    totalWaterBill,
-                    waterUnitPrice,
-                    totalInsuranceAmount,
-                    totalBankFees,
-                    numberOfMonthsForAdvance: data.numberOfMonthsForAdvance,
+                .post<CalculationResult[]>("/calculations/test", {
+                    startDate: data.startDate,
+                    endDate: data.endDate,
                 })
                 .then((res) => res.data);
         },
@@ -210,7 +127,7 @@ export default function CalculationsPage() {
 
             doc.text(
                 `Avance sur charges : ${result.logement.advanceCharges} × ${
-                    result.numberOfMonthsForAdvance
+                    result.totalMonth
                 } mois = ${result.calculatedAdvance.toFixed(2)}€`,
                 20,
                 y
@@ -300,12 +217,6 @@ export default function CalculationsPage() {
         runCalculationsMutation.mutate(data);
     };
 
-    if (areChargesLoading) {
-        return (
-            <div className="text-center py-10">Chargement des données...</div>
-        );
-    }
-
     return (
         <div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
@@ -319,8 +230,7 @@ export default function CalculationsPage() {
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <CardContent className="space-y-4">
-                            {/* Water Bill Select */}
-                            <div className="space-y-2">
+                            {/* <div className="space-y-2">
                                 <Label htmlFor="waterBillId">
                                     Facture d'Eau
                                 </Label>
@@ -359,7 +269,7 @@ export default function CalculationsPage() {
                                 )}
                             </div>
 
-                            {/* Insurance Bill Select */}
+                           
                             <div className="space-y-2">
                                 <Label htmlFor="insuranceBillId">
                                     Facture d'Assurance
@@ -401,7 +311,7 @@ export default function CalculationsPage() {
                                 )}
                             </div>
 
-                            {/* Bank Fees Bill Select */}
+                           
                             <div className="space-y-2">
                                 <Label htmlFor="bankFeesBillId">
                                     Facture Frais Bancaires
@@ -439,31 +349,34 @@ export default function CalculationsPage() {
                                         {errors.bankFeesBillId.message}
                                     </p>
                                 )}
-                            </div>
+                            </div> */}
 
                             {/* Number of Months for Advance Input */}
                             <div className="space-y-2">
-                                <Label htmlFor="numberOfMonthsForAdvance">
-                                    Nombre de mois pour l'avance sur charges
-                                </Label>
+                                <Label htmlFor="startDate">Mois du début</Label>
                                 <Controller
-                                    name="numberOfMonthsForAdvance"
+                                    name="startDate"
                                     control={control}
                                     render={({ field }) => (
                                         <Input
-                                            type="number"
+                                            type="date"
                                             step="any"
-                                            placeholder="Entrez le nombre de mois"
                                             {...field}
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    Number(e.target.value)
-                                                )
-                                            }
-                                            error={
-                                                errors.numberOfMonthsForAdvance
-                                                    ?.message
-                                            }
+                                        />
+                                    )}
+                                />
+                            </div>
+                            {/* Number of Months for Advance Input */}
+                            <div className="space-y-2">
+                                <Label htmlFor="endDate">Mois du fin</Label>
+                                <Controller
+                                    name="endDate"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            type="date"
+                                            step="any"
+                                            {...field}
                                         />
                                     )}
                                 />
@@ -502,7 +415,7 @@ export default function CalculationsPage() {
                                     <p>
                                         <strong>Avance sur charges :</strong>{" "}
                                         {result.logement.advanceCharges} ×{" "}
-                                        {result.numberOfMonthsForAdvance} mois ={" "}
+                                        {result.totalMonth} mois ={" "}
                                         {result.calculatedAdvance.toFixed(2)}€
                                     </p>
                                     <p>

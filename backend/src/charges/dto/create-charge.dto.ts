@@ -26,12 +26,10 @@ export class CreateChargeDto {
   date: string;
 
   @IsDateString()
-  @IsOptional()
-  startDate?: string;
+  startDate: string;
 
   @IsDateString()
-  @IsOptional()
-  endDate?: string;
+  endDate: string;
 
   @IsString()
   @IsOptional()
@@ -44,7 +42,7 @@ export class CreateChargeDto {
   @IsNumber()
   @Min(0)
   @IsOptional()
-  waterUnitPrice?: number;
+  waterUnitPrice: number;
 
   @IsNumber()
   @Min(0)

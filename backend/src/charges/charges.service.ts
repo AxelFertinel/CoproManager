@@ -71,4 +71,21 @@ export class ChargesService {
       where: { id },
     });
   }
+  async findChargesBetweenDates(
+    coproprieteId: string,
+    startDate: Date,
+    endDate: Date,
+  ) {
+    const charges = await this.prisma.charge.findMany({
+      where: {
+        coproprieteId,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+
+    return charges;
+  }
 }

@@ -12,7 +12,7 @@ import {
 import { CalculationsService, CalculationResult } from './calculations.service';
 import { CreateCalculationDto } from './dto/create-calculation.dto';
 import { UpdateCalculationDto } from './dto/update-calculation.dto';
-import { CalculateChargesDto } from './dto/calculate-charges.dto';
+import { NewCalculateChargesDto } from './dto/calculate-charges.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('calculations')
@@ -48,15 +48,15 @@ export class CalculationsController {
     return this.calculationsService.remove(+id);
   }
 
-  @Post('run')
-  async runCalculations(
-    @Body() calculateChargesDto: CalculateChargesDto,
+  @Post('test')
+  async new(
+    @Body() NewCalculateChargesDto: NewCalculateChargesDto,
     @Request() req,
-  ): Promise<CalculationResult[]> {
+  ) {
     const coproprieteId = req.user.coproprieteId;
 
-    return this.calculationsService.calculateCharges(
-      calculateChargesDto,
+    return this.calculationsService.newCalculCharges(
+      NewCalculateChargesDto,
       coproprieteId,
     );
   }

@@ -19,60 +19,60 @@ enum Role {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
-  email           String    @unique
-  password        String
-  role            Role      @default(ADMIN)
-  coproprieteId   String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  role          Role     @default(ADMIN)
+  coproprieteId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("users")
 }
 
 model Logement {
-  id              Int       @id @default(autoincrement())
-  name            String
-  email           String    @unique
-  tantieme        Float
-  advanceCharges  Float     @default(0)
-  waterMeterOld   Float     @default(0)
-  waterMeterNew   Float     @default(0)
-  coproprieteId   String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  tantieme       Float
+  advanceCharges Float    @default(0)
+  waterMeterOld  Float    @default(0)
+  waterMeterNew  Float    @default(0)
+  coproprieteId  String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@map("logements")
 }
 
 model Charge {
-  id                Int       @id @default(autoincrement())
-  type              String    // WATER, INSURANCE, BANK
-  amount            Float
-  date              DateTime
-  startDate         DateTime?
-  endDate           DateTime?
-  description       String?   @db.Text
-  waterUnitPrice    Float?    
-  coproprieteId   String
+  id             Int      @id @default(autoincrement())
+  type           String // WATER, INSURANCE, BANK
+  amount         Float
+  date           DateTime
+  startDate      DateTime
+  endDate        DateTime
+  description    String?  @db.Text
+  waterUnitPrice Float?
+  coproprieteId  String
 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
- 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("charges")
 }
 
 model Calculation {
-  id                Int       @id @default(autoincrement())
-  waterAmount       Float
-  insuranceAmount   Float
-  bankAmount        Float
-  advanceCharges    Float
-  totalAmount       Float
-  date              DateTime  @default(now())
+  id              Int      @id @default(autoincrement())
+  waterAmount     Float
+  insuranceAmount Float
+  bankAmount      Float
+  advanceCharges  Float
+  totalAmount     Float
+  date            DateTime @default(now())
   coproprieteId   String
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@map("calculations")
 }
