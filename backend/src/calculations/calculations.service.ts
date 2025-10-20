@@ -5,31 +5,7 @@ import { UpdateCalculationDto } from './dto/update-calculation.dto';
 import { NewCalculateChargesDto } from './dto/calculate-charges.dto';
 import { resourceLimits } from 'worker_threads';
 
-export interface CalculationResult {
-  logement: {
-    id: number;
-    name: string;
-    tantieme: number;
-    advanceCharges: number;
-    waterMeterOld: number;
-    waterMeterNew: number;
-    email: string;
-    coproprieteId: string;
-  };
-  totalWaterBill: number;
-  waterUnitPrice: number;
-  totalInsuranceAmount: number;
-  totalBankFees: number;
-  calculatedAdvance: number;
-  calculatedWaterConsumption: number;
-  calculatedInsuranceShare: number;
-  calculatedBankFeesShare: number;
-  totalCharges: number;
-  finalBalance: number;
-  status: 'to_pay' | 'to_reimburse' | 'balanced';
-}
-
-export interface NewCalculationResult {
+export interface CalculationInterface {
   logement: {
     id: number;
     name: string;
@@ -55,6 +31,7 @@ export interface NewCalculationResult {
   finalBalance: number;
   status: 'to_pay' | 'to_reimburse' | 'balanced';
 }
+
 @Injectable()
 export class CalculationsService {
   constructor(private prisma: PrismaService) {}
@@ -135,7 +112,7 @@ export class CalculationsService {
   ) {
     const { startDate, endDate } = dto;
 
-    const results: NewCalculationResult[] = [];
+    const results: CalculationInterface[] = [];
 
     const logements = await this.prisma.logement.findMany({
       where: { coproprieteId: userCoproprieteId },
@@ -144,11 +121,13 @@ export class CalculationsService {
     const bills = await this.prisma.charge.findMany({
       where: {
         coproprieteId: userCoproprieteId,
-        // startDate: { gte: startDate },
-        // endDate: { lte: endDate },
         date: { gte: startDate, lte: endDate },
       },
     });
+
+    if (bills.length === 0) {
+      return results;
+    }
 
     const month =
       (endDate.getFullYear() - startDate.getFullYear()) * 12 +

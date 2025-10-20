@@ -90,6 +90,7 @@ export default function CalculationsPage() {
         },
         onSuccess: (data) => {
             setResults(data);
+            console.log("🇬🇳 data:", data);
             if (data.length === 0) {
                 toast.error(
                     "Aucun résultat de calcul trouvé pour la période donnée."
@@ -147,27 +148,33 @@ export default function CalculationsPage() {
             );
             y += 10;
 
-            doc.text(
-                `Assurance : (${result.totalInsuranceAmount.toFixed(
-                    2
-                )} ÷ 100) × ${
-                    result.logement.tantieme
-                } = ${result.calculatedInsuranceShare.toFixed(2)}€`,
-                20,
-                y
-            );
-            y += 10;
+            {
+                result.totalInsuranceAmount > 0 &&
+                    doc.text(
+                        `Assurance : (${result.totalInsuranceAmount.toFixed(
+                            2
+                        )} ÷ 100) × ${
+                            result.logement.tantieme
+                        } = ${result.totalInsuranceAmount.toFixed(2)}€`,
+                        20,
+                        y
+                    );
+                result.totalInsuranceAmount > 0 && (y += 10);
+            }
 
-            doc.text(
-                `Frais bancaires : (${result.totalBankFees.toFixed(
-                    2
-                )} ÷ 100) × ${
-                    result.logement.tantieme
-                } = ${result.calculatedBankFeesShare.toFixed(2)}€`,
-                20,
-                y
-            );
-            y += 10;
+            {
+                result.totalBankFees > 0 &&
+                    doc.text(
+                        `Frais bancaires : (${result.totalBankFees.toFixed(
+                            2
+                        )} ÷ 100) × ${
+                            result.logement.tantieme
+                        } = ${result.calculatedBankFeesShare.toFixed(2)}€`,
+                        20,
+                        y
+                    );
+                result.totalBankFees > 0 && (y += 10);
+            }
             {
                 result.totalOtherCharges > 0 &&
                     doc.text(
@@ -308,9 +315,6 @@ export default function CalculationsPage() {
                         </CardFooter>
                     </form>
                 </div>
-                {/* {results && results.length == 0 && (
-                    <p>Aucune facture trouvé pour le calcul</p>
-                )} */}
 
                 {results && results.length > 0 && (
                     <div className="md:col-span-2 space-y-8">
@@ -333,38 +337,52 @@ export default function CalculationsPage() {
                                         {result.totalMonth} mois =&nbsp;
                                         {result.calculatedAdvance.toFixed(2)}€
                                     </p>
-                                    <p>
-                                        <strong>Consommation eau :</strong>
-                                        &nbsp; ({result.logement.waterMeterNew}-
-                                        {result.logement.waterMeterOld}) ×&nbsp;
-                                        {result.waterUnitPrice.toFixed(2)}
-                                        =&nbsp;
-                                        {Math.abs(
-                                            result.calculatedWaterConsumption
-                                        ).toFixed(2)}
-                                        €
-                                    </p>
-                                    <p>
-                                        <strong>Assurance :</strong>&nbsp; (
-                                        {result.totalInsuranceAmount.toFixed(2)}
-                                        ÷ 100) × {result.logement.tantieme}
-                                        =&nbsp;
-                                        {result.calculatedInsuranceShare.toFixed(
-                                            2
-                                        )}
-                                        €
-                                    </p>
-                                    <p>
-                                        <strong>Frais bancaires :</strong>&nbsp;
-                                        ({result.totalBankFees.toFixed(2)} ÷
-                                        100) ×&nbsp; {result.logement.tantieme}
-                                        =&nbsp;
-                                        {result.calculatedBankFeesShare.toFixed(
-                                            2
-                                        )}
-                                        €
-                                    </p>
 
+                                    {result.totalInsuranceAmount > 0 && (
+                                        <p>
+                                            <strong>Assurance :</strong>&nbsp; (
+                                            {result.totalInsuranceAmount.toFixed(
+                                                2
+                                            )}
+                                            ÷ 100) × {result.logement.tantieme}
+                                            =&nbsp;
+                                            {result.calculatedInsuranceShare.toFixed(
+                                                2
+                                            )}
+                                            €
+                                        </p>
+                                    )}
+
+                                    {result.calculatedWaterConsumption > 0 && (
+                                        <p>
+                                            <strong>Consommation eau :</strong>
+                                            &nbsp; (
+                                            {result.logement.waterMeterNew}-
+                                            {result.logement.waterMeterOld})
+                                            ×&nbsp;
+                                            {result.waterUnitPrice.toFixed(2)}
+                                            =&nbsp;
+                                            {Math.abs(
+                                                result.calculatedWaterConsumption
+                                            ).toFixed(2)}
+                                            €
+                                        </p>
+                                    )}
+
+                                    {result.totalBankFees > 0 && (
+                                        <p>
+                                            <strong>Frais bancaires :</strong>
+                                            &nbsp; (
+                                            {result.totalBankFees.toFixed(2)} ÷
+                                            100) ×&nbsp;{" "}
+                                            {result.logement.tantieme}
+                                            =&nbsp;
+                                            {result.calculatedBankFeesShare.toFixed(
+                                                2
+                                            )}
+                                            €
+                                        </p>
+                                    )}
                                     {result.totalOtherCharges > 0 && (
                                         <p>
                                             <strong>Autre frais :</strong>&nbsp;
