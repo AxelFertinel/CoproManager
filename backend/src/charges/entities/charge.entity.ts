@@ -1,5 +1,5 @@
 import { User } from '../../users/entities/user.entity';
-import { ChargeType } from '../dto/create-charge.dto';
+import { ChargeType } from '../enums/charge-type.enum';
 
 export class Charge {
   id: number;

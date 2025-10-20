@@ -30,20 +30,20 @@ const chargeSchema = z
             const parsedDate = new Date(date);
             return !isNaN(parsedDate.getTime());
         }, "Date de facturation invalide"),
-        startDate: z.string().refine((date) => {
-            const parsedDate = new Date(date);
-            return !isNaN(parsedDate.getTime());
-        }, "Date de début invalide"),
-        endDate: z.string().refine((date) => {
-            const parsedDate = new Date(date);
-            return !isNaN(parsedDate.getTime());
-        }, "Date de fin invalide"),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
         type: z.nativeEnum(ChargeType),
         description: z.string().optional(),
-        waterUnitPrice: z
-            .number()
-            .min(0, "Le prix unitaire doit être positif")
-            .optional(),
+        waterUnitPrice: z.preprocess((val) => {
+            if (val === "" || val === undefined || val === null)
+                return undefined;
+            if (typeof val === "string") {
+                const normalized = val.replace(",", ".");
+                const num = Number(normalized);
+                return isNaN(num) ? val : num;
+            }
+            return val;
+        }, z.number().min(0, "Le prix unitaire doit être positif").optional()),
     })
     .refine(
         (data) => {
@@ -53,11 +53,18 @@ const chargeSchema = z
             ) {
                 return false;
             }
+            if (
+                data.type !== ChargeType.OTHER &&
+                (!data.startDate || !data.endDate)
+            ) {
+                return false;
+            }
             return true;
         },
         {
-            message: "Le prix unitaire est requis pour les factures d'eau",
-            path: ["waterUnitPrice"],
+            message:
+                "Veuillez remplir tous les champs requis pour ce type de charge",
+            path: ["type"],
         }
     );
 
@@ -72,7 +79,6 @@ export default function ChargeFormPage() {
         queryFn: () => chargesService.getById(id!),
         enabled: !!id,
     });
-    console.log("🇧🇳 charge:", charge);
 
     const formatDateForInput = (dateString: string) => {
         try {
@@ -104,8 +110,12 @@ export default function ChargeFormPage() {
             reset({
                 amount: charge.amount,
                 date: formatDateForInput(charge.date),
-                startDate: formatDateForInput(charge.startDate),
-                endDate: formatDateForInput(charge.endDate),
+                startDate: charge.startDate
+                    ? formatDateForInput(charge.startDate)
+                    : undefined,
+                endDate: charge.endDate
+                    ? formatDateForInput(charge.endDate)
+                    : undefined,
                 type: charge.type,
                 description: charge.description || "",
                 waterUnitPrice: charge.waterUnitPrice,
@@ -139,10 +149,22 @@ export default function ChargeFormPage() {
     });
 
     const onSubmit = (data: ChargeFormData) => {
+        const { startDate, endDate, ...baseData } = data;
+        const formattedData = {
+            ...baseData,
+            date: new Date(data.date).toISOString(),
+            ...(data.type !== ChargeType.OTHER && {
+                startDate: startDate
+                    ? new Date(startDate).toISOString()
+                    : undefined,
+                endDate: endDate ? new Date(endDate).toISOString() : undefined,
+            }),
+        };
+
         if (id) {
-            updateChargeMutation.mutate({ id, data });
+            updateChargeMutation.mutate({ id, data: formattedData });
         } else {
-            createChargeMutation.mutate(data);
+            createChargeMutation.mutate(formattedData);
         }
     };
 
@@ -168,6 +190,90 @@ export default function ChargeFormPage() {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <CardContent className="space-y-6 pt-6">
                         <div className="grid gap-6">
+                            <div className="grid gap-2">
+                                <label
+                                    htmlFor="type"
+                                    className="text-sm font-medium text-gray-700"
+                                >
+                                    Type de charge
+                                </label>
+                                <Controller
+                                    name="type"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                        >
+                                            <SelectTrigger className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                                                <SelectValue placeholder="Sélectionner un type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem
+                                                    value={ChargeType.WATER}
+                                                >
+                                                    Eau
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value={ChargeType.INSURANCE}
+                                                >
+                                                    Assurance
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value={ChargeType.BANK}
+                                                >
+                                                    Frais bancaires
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value={ChargeType.OTHER}
+                                                >
+                                                    Autre
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                                {errors.type && (
+                                    <p className="text-red-500 text-sm">
+                                        {errors.type.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            {watch("type") === ChargeType.WATER && (
+                                <div className="grid gap-2">
+                                    <label
+                                        htmlFor="waterUnitPrice"
+                                        className="text-sm font-medium text-gray-700"
+                                    >
+                                        Prix unitaire de l'eau (€/m³)
+                                    </label>
+                                    <Controller
+                                        name="waterUnitPrice"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <input
+                                                type="text"
+                                                inputMode="decimal"
+                                                pattern="[0-9]*[.,]?[0-9]*"
+                                                value={field.value ?? ""}
+                                                onChange={(e) =>
+                                                    field.onChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                onBlur={field.onBlur}
+                                                className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                            />
+                                        )}
+                                    />
+                                    {errors.waterUnitPrice && (
+                                        <p className="text-red-500 text-sm">
+                                            {errors.waterUnitPrice.message}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                             <div className="grid gap-2">
                                 <label
                                     htmlFor="amount"
@@ -210,120 +316,46 @@ export default function ChargeFormPage() {
                                 )}
                             </div>
 
-                            <div className="grid gap-2">
-                                <label
-                                    htmlFor="startDate"
-                                    className="text-sm font-medium text-gray-700"
-                                >
-                                    Date de Début de Période
-                                </label>
-                                <input
-                                    {...register("startDate")}
-                                    type="date"
-                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                />
-                                {errors.startDate && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.startDate.message}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="grid gap-2">
-                                <label
-                                    htmlFor="endDate"
-                                    className="text-sm font-medium text-gray-700"
-                                >
-                                    Date de Fin de Période
-                                </label>
-                                <input
-                                    {...register("endDate")}
-                                    type="date"
-                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                />
-                                {errors.endDate && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.endDate.message}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="grid gap-2">
-                                <label
-                                    htmlFor="type"
-                                    className="text-sm font-medium text-gray-700"
-                                >
-                                    Type de charge
-                                </label>
-                                <Controller
-                                    name="type"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            value={field.value}
+                            {watch("type") !== ChargeType.OTHER && (
+                                <>
+                                    <div className="grid gap-2">
+                                        <label
+                                            htmlFor="startDate"
+                                            className="text-sm font-medium text-gray-700"
                                         >
-                                            <SelectTrigger className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
-                                                <SelectValue placeholder="Sélectionner un type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem
-                                                    value={ChargeType.WATER}
-                                                >
-                                                    Eau
-                                                </SelectItem>
-                                                <SelectItem
-                                                    value={ChargeType.INSURANCE}
-                                                >
-                                                    Assurance
-                                                </SelectItem>
-                                                <SelectItem
-                                                    value={ChargeType.BANK}
-                                                >
-                                                    Frais bancaires
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                                {errors.type && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.type.message}
-                                    </p>
-                                )}
-                            </div>
-
-                            {watch("type") === ChargeType.WATER && (
-                                <div className="grid gap-2">
-                                    <label
-                                        htmlFor="waterUnitPrice"
-                                        className="text-sm font-medium text-gray-700"
-                                    >
-                                        Prix unitaire de l'eau (€/m³)
-                                    </label>
-                                    <Controller
-                                        name="waterUnitPrice"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                {...field}
-                                                onChange={(e) =>
-                                                    field.onChange(
-                                                        Number(e.target.value)
-                                                    )
-                                                }
-                                                className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                            />
+                                            Date de Début de Période
+                                        </label>
+                                        <input
+                                            {...register("startDate")}
+                                            type="date"
+                                            className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                        />
+                                        {errors.startDate && (
+                                            <p className="text-red-500 text-sm">
+                                                {errors.startDate.message}
+                                            </p>
                                         )}
-                                    />
-                                    {errors.waterUnitPrice && (
-                                        <p className="text-red-500 text-sm">
-                                            {errors.waterUnitPrice.message}
-                                        </p>
-                                    )}
-                                </div>
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <label
+                                            htmlFor="endDate"
+                                            className="text-sm font-medium text-gray-700"
+                                        >
+                                            Date de Fin de Période
+                                        </label>
+                                        <input
+                                            {...register("endDate")}
+                                            type="date"
+                                            className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                        />
+                                        {errors.endDate && (
+                                            <p className="text-red-500 text-sm">
+                                                {errors.endDate.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                </>
                             )}
 
                             <div className="grid gap-2">

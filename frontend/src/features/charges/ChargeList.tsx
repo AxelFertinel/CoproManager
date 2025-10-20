@@ -55,8 +55,8 @@ export default function ChargeList({ charges }: ChargeListProps) {
                 return "Assurance";
             case "BANK":
                 return "Frais bancaires";
-            default:
-                return type;
+            case "OTHER":
+                return "Autre";
         }
     };
 
@@ -76,7 +76,78 @@ export default function ChargeList({ charges }: ChargeListProps) {
 
     return (
         <div className="space-y-4">
-            <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+            {/* Vue mobile */}
+            <div className="lg:hidden space-y-4">
+                {charges.map((charge) => (
+                    <div
+                        key={charge.id}
+                        className="bg-white p-4 rounded-lg shadow"
+                    >
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-start">
+                                <h3 className="font-medium text-gray-900">
+                                    {getChargeTypeLabel(charge.type)}
+                                </h3>
+                                <span className="text-lg font-semibold">
+                                    {charge.amount.toFixed(2)} €
+                                </span>
+                            </div>
+                            {charge.waterUnitPrice && (
+                                <p className="text-sm text-gray-500">
+                                    Prix unitaire: {charge.waterUnitPrice} €/m³
+                                </p>
+                            )}
+                            <div className="text-sm text-gray-500">
+                                <p>
+                                    Date:{" "}
+                                    {new Date(charge.date).toLocaleDateString(
+                                        "fr-FR"
+                                    )}
+                                </p>
+                                {charge.type !== "OTHER" &&
+                                    charge.startDate &&
+                                    charge.endDate && (
+                                        <p>
+                                            Période:{" "}
+                                            {new Date(
+                                                charge.startDate
+                                            ).toLocaleDateString("fr-FR")}{" "}
+                                            -{" "}
+                                            {new Date(
+                                                charge.endDate
+                                            ).toLocaleDateString("fr-FR")}
+                                        </p>
+                                    )}
+                                {charge.description && (
+                                    <p className="mt-1">
+                                        Description: {charge.description}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="flex justify-end space-x-2 pt-2">
+                                <Link to={`/charges/${charge.id}`}>
+                                    <Button
+                                        variant="outline"
+                                        className="h-8 px-3 text-xs"
+                                    >
+                                        Modifier
+                                    </Button>
+                                </Link>
+                                <Button
+                                    variant="destructive"
+                                    className="h-8 px-3 text-xs"
+                                    onClick={() => handleDelete(charge)}
+                                >
+                                    Supprimer
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Vue desktop */}
+            <div className="hidden lg:block bg-white shadow-sm rounded-lg overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
@@ -120,13 +191,21 @@ export default function ChargeList({ charges }: ChargeListProps) {
                                     )}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {new Date(
-                                        charge.startDate
-                                    ).toLocaleDateString("fr-FR")}{" "}
-                                    -{" "}
-                                    {new Date(
-                                        charge.endDate
-                                    ).toLocaleDateString("fr-FR")}
+                                    {charge.type !== "OTHER" &&
+                                    charge.startDate &&
+                                    charge.endDate ? (
+                                        <>
+                                            {new Date(
+                                                charge.startDate
+                                            ).toLocaleDateString("fr-FR")}{" "}
+                                            -{" "}
+                                            {new Date(
+                                                charge.endDate
+                                            ).toLocaleDateString("fr-FR")}
+                                        </>
+                                    ) : (
+                                        "-"
+                                    )}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-500">
                                     {charge.description || "-"}
@@ -136,12 +215,16 @@ export default function ChargeList({ charges }: ChargeListProps) {
                                         to={`/charges/${charge.id}`}
                                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                                     >
-                                        <Button variant="outline">
+                                        <Button
+                                            variant="outline"
+                                            className="h-8 px-3 text-xs"
+                                        >
                                             Modifier
                                         </Button>
                                     </Link>
                                     <Button
                                         variant="destructive"
+                                        className="h-8 px-3 text-xs"
                                         onClick={() => handleDelete(charge)}
                                     >
                                         Supprimer

@@ -4,17 +4,12 @@ import {
   IsNumber,
   IsString,
   Min,
-  IsDate,
+  IsDateString,
   IsOptional,
   IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-
-export enum ChargeType {
-  WATER = 'WATER',
-  INSURANCE = 'INSURANCE',
-  BANK = 'BANK',
-}
+import { ChargeType } from '../enums/charge-type.enum';
 
 export class CreateChargeDto {
   @IsEnum(ChargeType)
@@ -26,24 +21,21 @@ export class CreateChargeDto {
   @IsNotEmpty()
   amount: number;
 
+  @IsDateString()
+  @IsNotEmpty()
+  date: string;
+
+  @IsDateString()
+  @IsOptional()
+  startDate?: string;
+
+  @IsDateString()
+  @IsOptional()
+  endDate?: string;
+
   @IsString()
   @IsOptional()
   description?: string;
-
-  @IsDate()
-  @Type(() => Date)
-  @IsNotEmpty()
-  date: Date;
-
-  @IsDate()
-  @Type(() => Date)
-  @IsNotEmpty()
-  startDate: Date;
-
-  @IsDate()
-  @Type(() => Date)
-  @IsNotEmpty()
-  endDate: Date;
 
   @IsUUID()
   @IsOptional()
@@ -53,4 +45,14 @@ export class CreateChargeDto {
   @Min(0)
   @IsOptional()
   waterUnitPrice?: number;
+
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  waterMeterOld?: number;
+
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  waterMeterNew?: number;
 }

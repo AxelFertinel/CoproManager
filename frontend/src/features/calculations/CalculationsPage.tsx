@@ -8,7 +8,6 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
-    CardDescription,
     CardFooter,
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
@@ -20,10 +19,9 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "../../components/ui/select";
-import { api, Charge, ChargeType, User } from "../../services/api";
+} from "../../components/ui/Select";
+import { api, Charge, ChargeType } from "../../services/api";
 import { useState, useEffect } from "react";
-import { usersService } from "../../services/users";
 import { chargesService } from "../../services/charges";
 import React from "react";
 import jsPDF from "jspdf";
@@ -53,6 +51,7 @@ interface CalculationResult {
         email: string;
         coproprieteId: string;
     };
+
     totalWaterBill: number;
     waterUnitPrice: number;
     totalInsuranceAmount: number;
@@ -252,19 +251,29 @@ export default function CalculationsPage() {
             y += 10;
 
             doc.text(
-                `TOTAL CHARGES : ${result.totalCharges.toFixed(2)}€`,
+                `Total charges : ${result.totalCharges.toFixed(2)}€`,
                 20,
                 y
             );
             y += 10;
 
             doc.text(
-                `AVANCE VERSÉE : ${result.calculatedAdvance.toFixed(2)}€`,
+                `Avance versée : ${result.calculatedAdvance.toFixed(2)}€`,
                 20,
                 y
             );
             y += 10;
 
+            doc.text(
+                `Avance - charges : ${result.calculatedAdvance.toFixed(
+                    2
+                )} - ${result.totalCharges.toFixed(
+                    2
+                )} = ${result.finalBalance.toFixed(2)}€`,
+                20,
+                y
+            );
+            y += 10;
             doc.text(
                 `SOLDE : ${Math.abs(result.finalBalance).toFixed(2)}€ ${
                     result.status === "to_pay"
@@ -283,9 +292,8 @@ export default function CalculationsPage() {
                 doc.addPage();
                 y = 20;
             }
+            doc.save(`calculs_charges_${result.logement.name}.pdf`);
         });
-
-        doc.save("rapport_charges.pdf");
     };
 
     const onSubmit = (data: CalculationFormData) => {
@@ -483,7 +491,7 @@ export default function CalculationsPage() {
                             <Card key={result.logement.id}>
                                 <CardHeader>
                                     <CardTitle>
-                                        Calculs pour {result.logement.name}
+                                        {result.logement.name}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -525,10 +533,12 @@ export default function CalculationsPage() {
                                         )}
                                         €
                                     </p>
-                                    <h3 className="text-lg font-semibold mt-4">
-                                        TOTAL CHARGES :{" "}
-                                        {result.totalCharges.toFixed(2)}€
-                                    </h3>
+                                    <p>
+                                        <strong>Avance - charges :</strong>{" "}
+                                        {result.calculatedAdvance} -{" "}
+                                        {result.totalCharges} ={" "}
+                                        {result.finalBalance}€
+                                    </p>
 
                                     <p
                                         className={`font-bold ${

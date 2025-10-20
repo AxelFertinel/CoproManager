@@ -50,8 +50,8 @@ model Charge {
   type              String    // WATER, INSURANCE, BANK
   amount            Float
   date              DateTime
-  startDate         DateTime
-  endDate           DateTime
+  startDate         DateTime?
+  endDate           DateTime?
   description       String?   @db.Text
   waterUnitPrice    Float?    
   coproprieteId   String
@@ -81,4 +81,5 @@ enum ChargeType {
   WATER
   INSURANCE
   BANK
+  OTHER
 }

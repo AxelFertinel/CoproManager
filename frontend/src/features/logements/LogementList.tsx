@@ -51,7 +51,63 @@ export default function LogementList({ logements }: LogementListProps) {
 
     return (
         <div className="space-y-4">
-            <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+            {/* Vue mobile */}
+            <div className="lg:hidden space-y-4">
+                {logements.map((logement) => (
+                    <div
+                        key={logement.id}
+                        className="bg-white p-4 rounded-lg shadow"
+                    >
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-start">
+                                <h3 className="font-medium text-gray-900">
+                                    {logement.name}
+                                </h3>
+                                <span className="text-sm text-gray-500">
+                                    {logement.email}
+                                </span>
+                            </div>
+                            <div className="text-sm text-gray-500 space-y-1">
+                                <p>Tantième: {logement.tantieme}</p>
+                                <p>
+                                    Avance sur charges :{" "}
+                                    {logement.advanceCharges} €
+                                </p>
+                                <p>
+                                    Compteur d'eau : {logement.waterMeterOld}→{" "}
+                                    {logement.waterMeterNew}{" "}
+                                </p>
+                                <p>
+                                    Dernière mise à jour :{" "}
+                                    {new Date(
+                                        logement.updatedAt
+                                    ).toLocaleDateString("fr-FR")}
+                                </p>
+                            </div>
+                            <div className="flex justify-end space-x-2 pt-2">
+                                <Link to={`/logement/${logement.id}`}>
+                                    <Button
+                                        variant="outline"
+                                        className="h-8 px-3 text-xs"
+                                    >
+                                        Modifier
+                                    </Button>
+                                </Link>
+                                <Button
+                                    variant="destructive"
+                                    className="h-8 px-3 text-xs"
+                                    onClick={() => handleDelete(logement)}
+                                >
+                                    Supprimer
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Vue desktop */}
+            <div className="hidden lg:block bg-white shadow-sm rounded-lg overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
@@ -68,7 +124,7 @@ export default function LogementList({ logements }: LogementListProps) {
                                 Avance sur charges
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Compteur d'eau
+                                Compteur d'eau m³
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Dernière mise à jour
@@ -94,8 +150,8 @@ export default function LogementList({ logements }: LogementListProps) {
                                     {logement.advanceCharges} €
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {logement.waterMeterOld} m³ →{" "}
-                                    {logement.waterMeterNew} m³
+                                    {logement.waterMeterOld} →{" "}
+                                    {logement.waterMeterNew}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {new Date(
@@ -107,12 +163,16 @@ export default function LogementList({ logements }: LogementListProps) {
                                         to={`/logement/${logement.id}`}
                                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                                     >
-                                        <Button variant="outline">
+                                        <Button
+                                            variant="outline"
+                                            className="h-8 px-3 text-xs"
+                                        >
                                             Modifier
                                         </Button>
                                     </Link>
                                     <Button
                                         variant="destructive"
+                                        className="h-8 px-3 text-xs"
                                         onClick={() => handleDelete(logement)}
                                     >
                                         Supprimer
