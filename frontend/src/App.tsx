@@ -96,7 +96,7 @@ function App() {
                             }
                         />
                         <Route
-                            path="/calculations"
+                            path="/calcul"
                             element={
                                 <ProtectedRoute allowedRoles={["ADMIN"]}>
                                     <CalculationsPage />
@@ -105,7 +105,7 @@ function App() {
                         />
                     </Route>
                 </Routes>
-                <ToastContainer position="bottom-right" autoClose={1000} />
+                <ToastContainer position="bottom-right" autoClose={3000} />
             </Router>
         </QueryClientProvider>
     );

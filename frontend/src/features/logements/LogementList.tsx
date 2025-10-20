@@ -48,7 +48,18 @@ export default function LogementList({ logements }: LogementListProps) {
             deleteLogementMutation.mutate(logementToDelete.id);
         }
     };
-
+    if (logements.length === 0) {
+        return (
+            <div className="text-center py-10">
+                <p className="text-muted-foreground">
+                    Aucun logement n'a encore été ajouté.
+                </p>
+                <Link to="/logement/new">
+                    <Button className="mt-4">Ajouter un logement</Button>
+                </Link>
+            </div>
+        );
+    }
     return (
         <div className="space-y-4">
             {/* Vue mobile */}

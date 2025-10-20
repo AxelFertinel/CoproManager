@@ -99,7 +99,7 @@ export default function Navigation() {
                             Charges
                         </Link>
                         <Link
-                            to="/calculations"
+                            to="/calcul"
                             className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                                 isActive("/calculations")
                                     ? "bg-primary text-primary-foreground"

@@ -33,9 +33,9 @@ export default function HomePage() {
         {
             title: "Calculer les Charges",
             description:
-                "Sélectionnez les factures et calculez automatiquement les charges pour chaque copropriétaire. Générez un PDF des résultats.",
+                "Sélectionnez la date de début et la date de fin de votre exercice de rappel de charges puis générez un PDF des résultats à envoyer au propriétaire.",
             icon: <Calculator className="h-8 w-8" />,
-            path: "/calculations",
+            path: "/calcul",
             buttonText: "Calculer les charges",
         },
     ];

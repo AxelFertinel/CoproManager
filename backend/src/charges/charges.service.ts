@@ -16,8 +16,11 @@ export class ChargesService {
     });
   }
 
-  findAll() {
+  findAll(coproprieteId: string) {
     return this.prisma.charge.findMany({
+      where: {
+        coproprieteId,
+      },
       select: {
         id: true,
         type: true,
@@ -34,9 +37,9 @@ export class ChargesService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: number, coproprieteId: string) {
     return this.prisma.charge.findUnique({
-      where: { id },
+      where: { id, coproprieteId },
       select: {
         id: true,
         type: true,
@@ -53,10 +56,10 @@ export class ChargesService {
     });
   }
 
-  update(id: number, updateChargeDto: UpdateChargeDto) {
+  update(id: number, updateChargeDto: UpdateChargeDto, coproprieteId: string) {
     const { date, startDate, endDate, ...rest } = updateChargeDto;
     return this.prisma.charge.update({
-      where: { id },
+      where: { id, coproprieteId },
       data: {
         ...rest,
         date: date ? new Date(date) : undefined,
@@ -66,11 +69,12 @@ export class ChargesService {
     });
   }
 
-  remove(id: number) {
+  remove(id: number, coproprieteId: string) {
     return this.prisma.charge.delete({
-      where: { id },
+      where: { id, coproprieteId },
     });
   }
+
   async findChargesBetweenDates(
     coproprieteId: string,
     startDate: Date,

@@ -1,7 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
     Card,
@@ -13,32 +13,11 @@ import {
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Label } from "@radix-ui/react-label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../../components/ui/Select";
-import { api, Charge, ChargeType } from "../../services/api";
-import { useState, useEffect } from "react";
-import { chargesService } from "../../services/charges";
-import React from "react";
-import jsPDF from "jspdf";
 
-const formatDate = (dateString: string) => {
-    try {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date:", dateString);
-            return "Date invalide";
-        }
-        return date.toLocaleDateString("fr-FR");
-    } catch (error) {
-        console.error("Error formatting date:", dateString, error);
-        return "Date invalide";
-    }
-};
+import { api } from "../../services/api";
+import { useState } from "react";
+
+import jsPDF from "jspdf";
 
 interface CalculationResult {
     logement: {
@@ -94,7 +73,14 @@ export default function CalculationsPage() {
         },
         onSuccess: (data) => {
             setResults(data);
-            toast.success("Calculs effectués avec succès.");
+            if (data.length === 0) {
+                toast.error(
+                    "Aucun résultat de calcul trouvé pour la période donnée."
+                );
+                return;
+            } else {
+                toast.success("Calculs effectués avec succès.");
+            }
         },
         onError: (error) => {
             toast.error("Erreur lors de l'exécution des calculs.");
@@ -230,127 +216,6 @@ export default function CalculationsPage() {
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <CardContent className="space-y-4">
-                            {/* <div className="space-y-2">
-                                <Label htmlFor="waterBillId">
-                                    Facture d'Eau
-                                </Label>
-                                <Controller
-                                    name="waterBillId"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            value={field.value || "none"}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionner une facture d'eau" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {waterCharges?.map((charge) => (
-                                                    <SelectItem
-                                                        key={charge.id}
-                                                        value={charge.id.toString()}
-                                                    >
-                                                        {`${
-                                                            charge.amount
-                                                        }€ (${formatDate(
-                                                            charge.date
-                                                        )})`}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                                {errors.waterBillId && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.waterBillId.message}
-                                    </p>
-                                )}
-                            </div>
-
-                           
-                            <div className="space-y-2">
-                                <Label htmlFor="insuranceBillId">
-                                    Facture d'Assurance
-                                </Label>
-                                <Controller
-                                    name="insuranceBillId"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            value={field.value || "none"}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionner une facture d'assurance" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {insuranceCharges?.map(
-                                                    (charge) => (
-                                                        <SelectItem
-                                                            key={charge.id}
-                                                            value={charge.id.toString()}
-                                                        >
-                                                            {`${
-                                                                charge.amount
-                                                            }€ (${formatDate(
-                                                                charge.date
-                                                            )})`}
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                                {errors.insuranceBillId && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.insuranceBillId.message}
-                                    </p>
-                                )}
-                            </div>
-
-                           
-                            <div className="space-y-2">
-                                <Label htmlFor="bankFeesBillId">
-                                    Facture Frais Bancaires
-                                </Label>
-                                <Controller
-                                    name="bankFeesBillId"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            value={field.value || "none"}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionner une facture de frais bancaires" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {bankCharges?.map((charge) => (
-                                                    <SelectItem
-                                                        key={charge.id}
-                                                        value={charge.id.toString()}
-                                                    >
-                                                        {`${
-                                                            charge.amount
-                                                        }€ (${formatDate(
-                                                            charge.date
-                                                        )})`}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                                {errors.bankFeesBillId && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.bankFeesBillId.message}
-                                    </p>
-                                )}
-                            </div> */}
-
                             {/* Number of Months for Advance Input */}
                             <div className="space-y-2">
                                 <Label htmlFor="startDate">Mois du début</Label>
@@ -397,6 +262,9 @@ export default function CalculationsPage() {
                         </CardFooter>
                     </form>
                 </div>
+                {/* {results && results.length == 0 && (
+                    <p>Aucune facture trouvé pour le calcul</p>
+                )} */}
 
                 {results && results.length > 0 && (
                     <div className="md:col-span-2 space-y-8">

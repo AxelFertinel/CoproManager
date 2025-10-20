@@ -26,15 +26,17 @@ export class ChargesController {
   }
 
   @Get()
-  findAll() {
-    return this.chargesService.findAll();
+  findAll(@Request() req) {
+    const coproprieteId = req.user.coproprieteId;
+    return this.chargesService.findAll(coproprieteId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chargesService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const coproprieteId = req.user.coproprieteId;
+    return this.chargesService.findOne(+id, coproprieteId);
   }
-  
+
   @Get('charges')
   fidnAllCharges(@Body() dto: NewCalculateChargesDto, @Request() req) {
     const coproprieteId = req.user.coproprieteId;
@@ -46,12 +48,14 @@ export class ChargesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChargeDto: UpdateChargeDto) {
-    return this.chargesService.update(+id, updateChargeDto);
+  update(@Param('id') id: string, @Body() updateChargeDto: UpdateChargeDto, @Request() req) {
+    const coproprieteId = req.user.coproprieteId;
+    return this.chargesService.update(+id, updateChargeDto, coproprieteId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chargesService.remove(+id);
+  remove(@Param('id') id: string, @Request() req) {
+    const coproprieteId = req.user.coproprieteId;
+    return this.chargesService.remove(+id, coproprieteId);
   }
 }
