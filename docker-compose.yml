@@ -1,0 +1,69 @@
+version: "3.8"
+
+services:
+    db:
+        image: mysql:8.0
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: change_me_root
+            MYSQL_DATABASE: coprodb
+            MYSQL_USER: copro
+            MYSQL_PASSWORD: change_me
+        volumes:
+            - db-data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        command: --default-authentication-plugin=mysql_native_password
+        networks:
+            - appnet
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        restart: unless-stopped
+        environment:
+            PMA_HOST: db
+            PMA_PORT: 3306
+        ports:
+            - "8080:80"
+        depends_on:
+            - db
+        networks:
+            - appnet
+
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        environment:
+            NODE_ENV: production
+            PORT: 3000
+            DATABASE_URL: mysql://copro:change_me@db:3306/coprodb
+        depends_on:
+            - db
+        ports:
+            - "3000:3000"
+        networks:
+            - appnet
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        environment:
+            NODE_ENV: production
+            VITE_API_URL: http://your-server-domain-or-ip:3000
+        depends_on:
+            - backend
+        ports:
+            - "80:80"
+        networks:
+            - appnet
+
+volumes:
+    db-data:
+
+networks:
+    appnet:
+        driver: bridge

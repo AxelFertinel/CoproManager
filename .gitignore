@@ -38,3 +38,5 @@ yarn-error.log*
 /frontend/node_modules
 /frontend/build
 /frontend/.env 
+
+.docker-compose.yml
