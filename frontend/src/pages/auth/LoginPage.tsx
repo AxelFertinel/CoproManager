@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link, redirect } from "react-router-dom";
 import { toast } from "react-toastify";
 import { LoginCredentials } from "../../types/auth";
 import { authService } from "../../services/auth.service";
@@ -9,14 +9,12 @@ import {
     Card,
     CardContent,
     CardHeader,
-    CardTitle,
     CardFooter,
 } from "../../components/ui/Card";
 import { Label } from "../../components/ui/Label";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const location = useLocation();
     const {
         register,
         handleSubmit,
@@ -27,8 +25,8 @@ export default function LoginPage() {
         try {
             await authService.login(data);
             toast.success("Connexion réussie");
-            const from = (location.state as any)?.from?.pathname || "/";
-            navigate(from, { replace: true });
+            navigate("/");
+           
         } catch (error) {
             toast.error("Erreur lors de la connexion");
         }

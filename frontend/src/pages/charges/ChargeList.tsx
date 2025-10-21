@@ -244,7 +244,7 @@ export default function ChargeList({ charges }: ChargeListProps) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cette action est irréversible. La charge de{" "}
+                            Cette action est irréversible. La charge de&nbsp;
                             {chargeToDelete?.amount}€ sera définitivement
                             supprimée.
                         </AlertDialogDescription>

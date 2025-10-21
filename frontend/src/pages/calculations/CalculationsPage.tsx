@@ -258,7 +258,7 @@ export default function CalculationsPage() {
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <CardContent className="space-y-4">
-                            {/* Number of Months for Advance Input */}
+                     
                             <div className="space-y-2">
                                 <Label htmlFor="startDate">
                                     Choisir le mois du début de votre exercice
@@ -280,7 +280,7 @@ export default function CalculationsPage() {
                                     </p>
                                 )}
                             </div>
-                            {/* Number of Months for Advance Input */}
+                            
                             <div className="space-y-2">
                                 <Label htmlFor="endDate">
                                     Choisir le mois de fin de votre exercice
@@ -305,7 +305,7 @@ export default function CalculationsPage() {
                         </CardContent>
                         <CardFooter className="flex justify-end gap-2">
                             <Button
-                                onClick={handleSubmit(onSubmit)}
+                                type="submit"
                                 disabled={calculChargesMutation.isPending}
                             >
                                 {calculChargesMutation.isPending

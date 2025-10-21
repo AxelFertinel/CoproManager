@@ -8,7 +8,6 @@ import {
     Card,
     CardContent,
     CardHeader,
-    CardTitle,
     CardFooter,
 } from "../../components/ui/Card";
 import { Label } from "../../components/ui/Label";
@@ -112,7 +111,7 @@ export default function RegisterPage() {
                     </CardContent>
                     <CardFooter className="flex justify-center">
                         <p className="text-sm text-muted-foreground">
-                            Déjà un compte ?{" "}
+                            Déjà un compte ?&nbsp;
                             <Link
                                 to="/login"
                                 className="text-primary hover:underline"

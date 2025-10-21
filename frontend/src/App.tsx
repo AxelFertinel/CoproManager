@@ -2,16 +2,16 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "./components/Layout";
-import LoginPage from "./features/auth/LoginPage";
-import RegisterPage from "./features/auth/RegisterPage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import LogementListPage from "./features/logements/LogementListPage";
+import LogementListPage from "./pages/logements/LogementListPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ChargeFormPage from "./features/charges/ChargeFormPage";
-import { ChargeListPage } from "./features/charges/ChargeListPage";
-import CalculationsPage from "./features/calculations/CalculationsPage";
-import HomePage from "./features/home/HomePage";
-import LogementFormPage from "./features/logements/LogementFormPage";
+import ChargeFormPage from "./pages/charges/ChargeFormPage";
+import { ChargeListPage } from "./pages/charges/ChargeListPage";
+import CalculationsPage from "./pages/calculations/CalculationsPage";
+import HomePage from "./pages/home/HomePage";
+import LogementFormPage from "./pages/logements/LogementFormPage";
 
 const queryClient = new QueryClient();
 
