@@ -1,0 +1,22 @@
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+# Installer les dépendances avec npm
+COPY package*.json ./
+RUN npm ci --silent
+
+# Copier le reste et builder l'application
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+
+# Copier la configuration nginx personnalisée
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copier les fichiers buildés
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

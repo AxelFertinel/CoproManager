@@ -34,11 +34,8 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
-        restart: unless-stopped
-        environment:
-            NODE_ENV: production
-            PORT: 3000
-            DATABASE_URL: mysql://copro:change_me@db:3306/coprodb
+        env_file:
+            - ./backend/.env
         depends_on:
             - db
         ports:
