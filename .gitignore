@@ -39,4 +39,7 @@ yarn-error.log*
 /frontend/build
 /frontend/.env 
 
+# Docker / compose (ne pas versionner les fichiers d'environnement sensibles)
 docker-compose.yml
+docker-compose.override.yml
+docker-compose.*.yml
