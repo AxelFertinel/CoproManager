@@ -50,7 +50,7 @@ services:
         restart: unless-stopped
         environment:
             NODE_ENV: production
-            VITE_API_URL: http://localhost:3000
+            VITE_API_URL: https://copromanager.duckdns.org
         depends_on:
             - backend
         ports:

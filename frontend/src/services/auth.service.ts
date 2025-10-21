@@ -6,7 +6,9 @@ import {
     User,
 } from "../types/auth";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
+//const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
+const API_URL = "https://copromanager.duckdns.org/auth";
+
 class AuthService {
     private readonly TOKEN_KEY = "token";
     private readonly USER_KEY = "user";
