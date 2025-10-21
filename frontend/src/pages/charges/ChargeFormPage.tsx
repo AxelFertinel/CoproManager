@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
-import { Input } from "../../components/ui/Input";
 import {
     Card,
     CardContent,
@@ -23,6 +22,7 @@ import {
 import { ChargeType } from "../../services/api";
 import { useNavigate, useParams } from "react-router-dom";
 import { chargesService } from "../../services/charges";
+import { Input } from "@/components/ui";
 
 const chargeSchema = z
     .object({
