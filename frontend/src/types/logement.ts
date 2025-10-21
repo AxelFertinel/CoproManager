@@ -1,5 +1,3 @@
-import { UserRole } from "./auth";
-
 export interface Logement {
     id: number;
     name: string;
@@ -13,7 +11,6 @@ export interface Logement {
     updatedAt: Date;
 }
 
-// Type pour la création d'un nouveau logement
 export interface CreateLogementData {
     name: string;
     email: string;
@@ -24,7 +21,6 @@ export interface CreateLogementData {
     coproprieteId: string;
 }
 
-// Type pour la mise à jour d'un logement
 export interface UpdateLogementData {
     name?: string;
     email?: string;

@@ -65,8 +65,8 @@ export default function Navigation() {
                     to="/"
                     className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                         isActive("/")
-                            ? "bg-primary text-primary-foreground"
-                            : "text-foreground hover:bg-accent"
+                            ? "bg-primary hover:text-white text-white"
+                            : "hover:text-white hover:bg-primary"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                 >
@@ -79,8 +79,8 @@ export default function Navigation() {
                             to="/logement"
                             className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                                 isActive("/logement")
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-foreground hover:bg-accent"
+                                    ? "bg-primary hover:text-white text-white"
+                                    : "hover:text-white hover:bg-primary"
                             }`}
                             onClick={() => setIsMenuOpen(false)}
                         >
@@ -91,8 +91,8 @@ export default function Navigation() {
                             to="/charges"
                             className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                                 isActive("/charges")
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-foreground hover:bg-accent"
+                                    ? "bg-primary hover:text-white text-white"
+                                    : "hover:text-white hover:bg-primary"
                             }`}
                             onClick={() => setIsMenuOpen(false)}
                         >
@@ -102,8 +102,8 @@ export default function Navigation() {
                             to="/calcul"
                             className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                                 isActive("/calculations")
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-foreground hover:bg-accent"
+                                    ? "bg-primary hover:text-white text-white"
+                                    : "hover:text-white hover:bg-primary"
                             }`}
                             onClick={() => setIsMenuOpen(false)}
                         >

@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import LogementList from "./LogementList";
 import { logementsService } from "../../services/logements";
 
 export default function LogementListPage() {
-    const navigate = useNavigate();
     const { data: logements = [], isLoading } = useQuery({
         queryKey: ["logements"],
         queryFn: logementsService.getAll,

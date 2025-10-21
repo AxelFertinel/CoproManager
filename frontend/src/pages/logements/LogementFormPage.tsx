@@ -24,14 +24,45 @@ import {
 } from "../../types/logement";
 import { authService } from "../../services/auth.service";
 
-const logementFormSchema = z.object({
-    name: z.string().min(1, "Le nom est requis"),
-    email: z.string().email("Email invalide"),
-    tantieme: z.number().min(0, "Le tantième doit être positif"),
-    advanceCharges: z.number().min(0, "L'avance doit être positive"),
-    waterMeterOld: z.number().min(0, "Le compteur d'eau doit être positif"),
-    waterMeterNew: z.number().min(0, "Le compteur d'eau doit être positif"),
-});
+const positiveNumberField = (fieldLabel: string) =>
+    z.preprocess(
+        (val) => {
+            if (val === "" || val === null || val === undefined)
+                return undefined;
+            const num = Number(val);
+            return isNaN(num) ? undefined : num;
+        },
+        z
+            .number({
+                required_error: `${fieldLabel} est requis`,
+                invalid_type_error: `${fieldLabel} doit être un nombre`,
+            })
+            .min(0, `${fieldLabel} doit être positif`)
+    );
+
+export const logementFormSchema = z
+    .object({
+        name: z.string().min(1, "Le nom est requis"),
+        email: z.string().email("L'email est invalide"),
+        tantieme: positiveNumberField("Le tantième"),
+        advanceCharges: positiveNumberField("Les provisions sur charges"),
+        waterMeterOld: positiveNumberField("L'ancien relevé du compteur d’eau"),
+        waterMeterNew: positiveNumberField(
+            "Le nouveau relevé du compteur d’eau"
+        ),
+    })
+    .superRefine((data, ctx) => {
+        if (data.waterMeterOld && data.waterMeterNew) {
+            if (data.waterMeterNew <= data.waterMeterOld) {
+                ctx.addIssue({
+                    path: ["waterMeterNew"],
+                    message:
+                        "Le nouveau relevé ne peut pas être inférieur ou égal à l'ancien",
+                    code: z.ZodIssueCode.custom,
+                });
+            }
+        }
+    });
 
 type LogementFormData = z.infer<typeof logementFormSchema>;
 
@@ -129,13 +160,16 @@ export default function LogementFormPage() {
                         {id
                             ? "Modifiez les informations du logement"
                             : "Remplissez les informations pour créer un nouveau logement"}
+                        <p className="text-red-500">
+                            Les champs requis sont marqués d'un astérisque (*)
+                        </p>
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <CardContent className="space-y-6 pt-6">
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Nom</Label>
+                                <Label htmlFor="name">Nom *</Label>
                                 <Input
                                     id="name"
                                     {...register("name")}
@@ -144,7 +178,7 @@ export default function LogementFormPage() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">Email *</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -154,7 +188,7 @@ export default function LogementFormPage() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="tantieme">Tantième</Label>
+                                <Label htmlFor="tantieme">Tantième *</Label>
                                 <Input
                                     id="tantieme"
                                     type="number"
@@ -168,7 +202,7 @@ export default function LogementFormPage() {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="advanceCharges">
-                                    Avance sur charges
+                                    Avance sur charges *
                                 </Label>
                                 <Input
                                     id="advanceCharges"
@@ -183,7 +217,7 @@ export default function LogementFormPage() {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="waterMeterOld">
-                                    Ancien compteur d'eau
+                                    Ancien compteur d'eau *
                                 </Label>
                                 <Input
                                     id="waterMeterOld"
@@ -198,7 +232,7 @@ export default function LogementFormPage() {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="waterMeterNew">
-                                    Nouveau compteur d'eau
+                                    Nouveau compteur d'eau *
                                 </Label>
                                 <Input
                                     id="waterMeterNew"

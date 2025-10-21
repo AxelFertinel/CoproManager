@@ -24,17 +24,17 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    tantieme: number;
-    advanceCharges: number;
-    waterMeterOld: number;
-    waterMeterNew: number;
-    createdAt: string;
-    updatedAt: string;
-}
+// export interface User {
+//     id: string;
+//     email: string;
+//     name: string;
+//     tantieme: number;
+//     advanceCharges: number;
+//     waterMeterOld: number;
+//     waterMeterNew: number;
+//     createdAt: string;
+//     updatedAt: string;
+// }
 
 export enum ChargeType {
     WATER = "WATER",
@@ -58,32 +58,32 @@ export interface Charge {
     updatedAt: string;
 }
 
-export const createUser = async (
-    data: Omit<User, "id" | "createdAt" | "updatedAt">
-) => {
-    const response = await api.post<User>("/users", data);
-    return response.data;
-};
+// export const createUser = async (
+//     data: Omit<User, "id" | "createdAt" | "updatedAt">
+// ) => {
+//     const response = await api.post<User>("/users", data);
+//     return response.data;
+// };
 
-export const getUsers = async () => {
-    const response = await api.get<User[]>("/users");
-    return response.data;
-};
+// export const getUsers = async () => {
+//     const response = await api.get<User[]>("/users");
+//     return response.data;
+// };
 
-export const getUser = async (id: string) => {
-    const response = await api.get<User>(`/users/${id}`);
-    return response.data;
-};
+// export const getUser = async (id: string) => {
+//     const response = await api.get<User>(`/users/${id}`);
+//     return response.data;
+// };
 
-export const updateUser = async (id: string, data: Partial<User>) => {
-    const response = await api.patch<User>(`/users/${id}`, data);
-    return response.data;
-};
+// export const updateUser = async (id: string, data: Partial<User>) => {
+//     const response = await api.patch<User>(`/users/${id}`, data);
+//     return response.data;
+// };
 
 export const deleteUser = async (id: string) => {
     await api.delete(`/users/${id}`);
 };
-
+//charge
 export const createCharge = async (
     data: Omit<Charge, "id" | "createdAt" | "updatedAt" | "monthlyCharge">
 ) => {
@@ -168,68 +168,68 @@ export const getCurrentUser = async () => {
 };
 
 // Copropriétés
-export const getCoproprietes = async () => {
-    const response = await axios.get(`${API_URL}/coproprietes`);
-    return response.data;
-};
+// export const getCoproprietes = async () => {
+//     const response = await axios.get(`${API_URL}/coproprietes`);
+//     return response.data;
+// };
 
-export const getCopropriete = async (id: string) => {
-    const response = await axios.get(`${API_URL}/coproprietes/${id}`);
-    return response.data;
-};
+// export const getCopropriete = async (id: string) => {
+//     const response = await axios.get(`${API_URL}/coproprietes/${id}`);
+//     return response.data;
+// };
 
-export const createCopropriete = async (data: {
-    name: string;
-    address: string;
-}) => {
-    const response = await axios.post(`${API_URL}/coproprietes`, data);
-    return response.data;
-};
+// export const createCopropriete = async (data: {
+//     name: string;
+//     address: string;
+// }) => {
+//     const response = await axios.post(`${API_URL}/coproprietes`, data);
+//     return response.data;
+// };
 
-export const updateCopropriete = async (
-    id: string,
-    data: { name: string; address: string }
-) => {
-    const response = await axios.patch(`${API_URL}/coproprietes/${id}`, data);
-    return response.data;
-};
+// export const updateCopropriete = async (
+//     id: string,
+//     data: { name: string; address: string }
+// ) => {
+//     const response = await axios.patch(`${API_URL}/coproprietes/${id}`, data);
+//     return response.data;
+// };
 
-export const deleteCopropriete = async (id: string) => {
-    await axios.delete(`${API_URL}/coproprietes/${id}`);
-};
+// export const deleteCopropriete = async (id: string) => {
+//     await axios.delete(`${API_URL}/coproprietes/${id}`);
+// };
 
 // Calculs
-export const getCalculations = async () => {
-    const response = await axios.get(`${API_URL}/calculations`);
-    return response.data;
-};
+// export const getCalculations = async () => {
+//     const response = await axios.get(`${API_URL}/calculations`);
+//     return response.data;
+// };
 
-export const getCalculation = async (id: string) => {
-    const response = await axios.get(`${API_URL}/calculations/${id}`);
-    return response.data;
-};
+// export const getCalculation = async (id: string) => {
+//     const response = await axios.get(`${API_URL}/calculations/${id}`);
+//     return response.data;
+// };
 
-export const createCalculation = async (data: {
-    totalWaterBill: number;
-    waterUnitPrice: number;
-    logementId: number;
-}) => {
-    const response = await axios.post(`${API_URL}/calculations`, data);
-    return response.data;
-};
+// export const createCalculation = async (data: {
+//     totalWaterBill: number;
+//     waterUnitPrice: number;
+//     logementId: number;
+// }) => {
+//     const response = await axios.post(`${API_URL}/calculations`, data);
+//     return response.data;
+// };
 
-export const updateCalculation = async (
-    id: string,
-    data: {
-        totalWaterBill: number;
-        waterUnitPrice: number;
-        logementId: number;
-    }
-) => {
-    const response = await axios.patch(`${API_URL}/calculations/${id}`, data);
-    return response.data;
-};
+// export const updateCalculation = async (
+//     id: string,
+//     data: {
+//         totalWaterBill: number;
+//         waterUnitPrice: number;
+//         logementId: number;
+//     }
+// ) => {
+//     const response = await axios.patch(`${API_URL}/calculations/${id}`, data);
+//     return response.data;
+// };
 
-export const deleteCalculation = async (id: string) => {
-    await axios.delete(`${API_URL}/calculations/${id}`);
-};
+// export const deleteCalculation = async (id: string) => {
+//     await axios.delete(`${API_URL}/calculations/${id}`);
+// };

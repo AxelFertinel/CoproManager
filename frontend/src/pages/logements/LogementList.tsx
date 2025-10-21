@@ -48,6 +48,7 @@ export default function LogementList({ logements }: LogementListProps) {
             deleteLogementMutation.mutate(logementToDelete.id);
         }
     };
+
     if (logements.length === 0) {
         return (
             <div className="text-center py-10">
@@ -61,6 +62,7 @@ export default function LogementList({ logements }: LogementListProps) {
             </div>
         );
     }
+    
     return (
         <div className="space-y-4">
             {/* Vue mobile */}

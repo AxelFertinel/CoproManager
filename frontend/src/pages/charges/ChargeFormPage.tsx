@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import { Input } from "../../components/ui/Input";
 import {
     Card,
     CardContent,
@@ -93,7 +94,6 @@ const chargeSchema = z
             }
         }
 
-        // 🚨 Nouvelle validation : endDate >= startDate
         if (data.startDate && data.endDate) {
             const start = new Date(data.startDate);
             const end = new Date(data.endDate);
@@ -246,7 +246,7 @@ export default function ChargeFormPage() {
                                             onValueChange={field.onChange}
                                             value={field.value}
                                         >
-                                            <SelectTrigger className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                                            <SelectTrigger>
                                                 <SelectValue placeholder="Sélectionner un type" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -295,20 +295,14 @@ export default function ChargeFormPage() {
                                                 : ""}
                                             &nbsp;*
                                         </label>
-                                        <input
-                                            {...register("amount", {
-                                                valueAsNumber: true,
-                                            })}
+                                        <Input
+                                            id="amount"
                                             type="number"
                                             step="0.01"
-                                            className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                             placeholder="0.00"
+                                            {...register("amount")}
+                                            error={errors.amount?.message}
                                         />
-                                        {errors.amount && (
-                                            <p className="text-red-500 text-sm">
-                                                {errors.amount.message}
-                                            </p>
-                                        )}
                                     </div>
                                     {watch("type") === ChargeType.WATER && (
                                         <div className="grid gap-2">
@@ -322,9 +316,8 @@ export default function ChargeFormPage() {
                                                 name="waterUnitPrice"
                                                 control={control}
                                                 render={({ field }) => (
-                                                    <input
+                                                    <Input
                                                         type="text"
-                                                        inputMode="decimal"
                                                         pattern="[0-9]*[.,]?[0-9]*"
                                                         value={
                                                             field.value ?? ""
@@ -335,7 +328,6 @@ export default function ChargeFormPage() {
                                                             )
                                                         }
                                                         onBlur={field.onBlur}
-                                                        className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                                     />
                                                 )}
                                             />
@@ -356,10 +348,9 @@ export default function ChargeFormPage() {
                                         >
                                             Date de Facturation *
                                         </label>
-                                        <input
+                                        <Input
                                             {...register("date")}
                                             type="date"
-                                            className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                         />
                                         {errors.date && (
                                             <p className="text-red-500 text-sm">
@@ -377,10 +368,9 @@ export default function ChargeFormPage() {
                                                 >
                                                     Date de Début de Période *
                                                 </label>
-                                                <input
+                                                <Input
                                                     {...register("startDate")}
                                                     type="date"
-                                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                                 />
                                                 {errors.startDate && (
                                                     <p className="text-red-500 text-sm">
@@ -399,10 +389,9 @@ export default function ChargeFormPage() {
                                                 >
                                                     Date de Fin de Période *
                                                 </label>
-                                                <input
+                                                <Input
                                                     {...register("endDate")}
                                                     type="date"
-                                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                                 />
                                                 {errors.endDate && (
                                                     <p className="text-red-500 text-sm">
@@ -422,15 +411,10 @@ export default function ChargeFormPage() {
                                         </label>
                                         <textarea
                                             {...register("description")}
-                                            className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                             rows={4}
                                             placeholder="Description de la charge"
+                                            className="flex h-25 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         />
-                                        {errors.description && (
-                                            <p className="text-red-500 text-sm">
-                                                {errors.description.message}
-                                            </p>
-                                        )}
                                     </div>
                                 </>
                             )}
