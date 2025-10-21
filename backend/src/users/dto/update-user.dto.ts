@@ -1,22 +1,3 @@
-import {
-  IsEmail,
-  IsOptional,
-  IsString,
-  IsUUID,
-  MinLength,
-} from 'class-validator';
+import { CreateUserDto } from './create-user.dto';
 
-export class UpdateUserDto {
-  @IsEmail()
-  @IsOptional()
-  email?: string;
-
-  @IsString()
-  @MinLength(6)
-  @IsOptional()
-  password?: string;
-
-  @IsUUID()
-  @IsOptional()
-  coproprieteId?: string;
-}
+export class UpdateUserDto extends CreateUserDto {}

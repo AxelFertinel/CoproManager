@@ -21,7 +21,6 @@ export class UsersController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto, @Request() req) {
-    // Un administrateur crée un utilisateur basic pour sa copropriété
     const adminCoproId = req.user.coproprieteId;
     return this.usersService.create({
       ...createUserDto,

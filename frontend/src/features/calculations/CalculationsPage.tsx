@@ -82,7 +82,7 @@ export default function CalculationsPage() {
     const calculChargesMutation = useMutation({
         mutationFn: (data: CalculationFormData) => {
             return api
-                .post<CalculationResult[]>("/calculations/test", {
+                .post<CalculationResult[]>("/calculations", {
                     startDate: data.startDate,
                     endDate: data.endDate,
                 })

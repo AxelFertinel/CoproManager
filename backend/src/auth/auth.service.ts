@@ -22,7 +22,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Cet email est déjà utilisé');
+      throw new ConflictException('Une erreur est survenue');
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -43,7 +43,6 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
-        email: user.email,
         coproprieteId: user.coproprieteId,
         role: user.role,
       },
@@ -76,7 +75,6 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
-        email: user.email,
         coproprieteId: user.coproprieteId,
         role: user.role,
       },
@@ -84,7 +82,6 @@ export class AuthService {
   }
 
   async logout(userId: number) {
-    // Dans une implémentation plus avancée, on pourrait invalider le token
     return { message: 'Déconnexion réussie' };
   }
 

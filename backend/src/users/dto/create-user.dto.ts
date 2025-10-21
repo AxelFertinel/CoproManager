@@ -19,30 +19,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsNumber()
-  @Min(0)
-  @IsNotEmpty()
-  tantieme: number;
-
-  @IsNumber()
-  @Min(0)
-  @IsNotEmpty()
-  advanceCharges: number;
-
-  @IsNumber()
-  @Min(0)
-  @IsNotEmpty()
-  waterMeterOld: number;
-
-  @IsNumber()
-  @Min(0)
-  @IsNotEmpty()
-  waterMeterNew: number;
-
   @IsUUID()
   @IsNotEmpty()
   coproprieteId: string;

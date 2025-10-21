@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateCalculationDto } from './dto/create-calculation.dto';
-import { UpdateCalculationDto } from './dto/update-calculation.dto';
-import { NewCalculateChargesDto } from './dto/calculate-charges.dto';
-import { resourceLimits } from 'worker_threads';
+import { CalculateChargesDto } from './dto/calculate-charges.dto';
 
 export interface CalculationInterface {
   logement: {
@@ -36,80 +33,77 @@ export interface CalculationInterface {
 export class CalculationsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createCalculationDto: CreateCalculationDto) {
-    return this.prisma.calculation.create({
-      data: {
-        date: createCalculationDto.date,
-        waterAmount: createCalculationDto.waterAmount,
-        insuranceAmount: createCalculationDto.insuranceAmount,
-        bankAmount: createCalculationDto.bankAmount,
-        advanceCharges: createCalculationDto.advanceCharges,
-        totalAmount: createCalculationDto.totalAmount,
-        coproprieteId: createCalculationDto.coproprieteId,
-      },
-    });
-  }
+  // create(createCalculationDto: CreateCalculationDto) {
+  //   return this.prisma.calculation.create({
+  //     data: {
+  //       date: createCalculationDto.date,
+  //       waterAmount: createCalculationDto.waterAmount,
+  //       insuranceAmount: createCalculationDto.insuranceAmount,
+  //       bankAmount: createCalculationDto.bankAmount,
+  //       advanceCharges: createCalculationDto.advanceCharges,
+  //       totalAmount: createCalculationDto.totalAmount,
+  //       coproprieteId: createCalculationDto.coproprieteId,
+  //     },
+  //   });
+  // }
 
-  findAll() {
-    return this.prisma.calculation.findMany({
-      select: {
-        id: true,
-        date: true,
-        waterAmount: true,
-        insuranceAmount: true,
-        bankAmount: true,
-        advanceCharges: true,
-        totalAmount: true,
-        coproprieteId: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-  }
+  // findAll() {
+  //   return this.prisma.calculation.findMany({
+  //     select: {
+  //       id: true,
+  //       date: true,
+  //       waterAmount: true,
+  //       insuranceAmount: true,
+  //       bankAmount: true,
+  //       advanceCharges: true,
+  //       totalAmount: true,
+  //       coproprieteId: true,
+  //       createdAt: true,
+  //       updatedAt: true,
+  //     },
+  //   });
+  // }
 
-  findOne(id: number) {
-    return this.prisma.calculation.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        date: true,
-        waterAmount: true,
-        insuranceAmount: true,
-        bankAmount: true,
-        advanceCharges: true,
-        totalAmount: true,
-        coproprieteId: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-  }
+  // findOne(id: number) {
+  //   return this.prisma.calculation.findUnique({
+  //     where: { id },
+  //     select: {
+  //       id: true,
+  //       date: true,
+  //       waterAmount: true,
+  //       insuranceAmount: true,
+  //       bankAmount: true,
+  //       advanceCharges: true,
+  //       totalAmount: true,
+  //       coproprieteId: true,
+  //       createdAt: true,
+  //       updatedAt: true,
+  //     },
+  //   });
+  // }
 
-  update(id: number, updateCalculationDto: UpdateCalculationDto) {
-    return this.prisma.calculation.update({
-      where: { id },
-      data: {
-        date: updateCalculationDto.date,
-        waterAmount: updateCalculationDto.waterAmount,
-        insuranceAmount: updateCalculationDto.insuranceAmount,
-        bankAmount: updateCalculationDto.bankAmount,
-        advanceCharges: updateCalculationDto.advanceCharges,
-        totalAmount: updateCalculationDto.totalAmount,
-        coproprieteId: updateCalculationDto.coproprieteId,
-      },
-    });
-  }
+  // update(id: number, updateCalculationDto: UpdateCalculationDto) {
+  //   return this.prisma.calculation.update({
+  //     where: { id },
+  //     data: {
+  //       date: updateCalculationDto.date,
+  //       waterAmount: updateCalculationDto.waterAmount,
+  //       insuranceAmount: updateCalculationDto.insuranceAmount,
+  //       bankAmount: updateCalculationDto.bankAmount,
+  //       advanceCharges: updateCalculationDto.advanceCharges,
+  //       totalAmount: updateCalculationDto.totalAmount,
+  //       coproprieteId: updateCalculationDto.coproprieteId,
+  //     },
+  //   });
+  // }
 
-  remove(id: number) {
-    return this.prisma.calculation.delete({
-      where: { id },
-    });
-  }
+  // remove(id: number) {
+  //   return this.prisma.calculation.delete({
+  //     where: { id },
+  //   });
+  // }
 
-  async newCalculCharges(
-    dto: NewCalculateChargesDto,
-    userCoproprieteId: string,
-  ) {
+  async CalculCharges(dto: CalculateChargesDto, userCoproprieteId: string) {
     const { startDate, endDate } = dto;
 
     const results: CalculationInterface[] = [];

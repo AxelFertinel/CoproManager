@@ -8,6 +8,4 @@ export class Charge {
   description: string;
   createdAt: Date;
   updatedAt: Date;
-  userId: number;
-  user?: User;
 }

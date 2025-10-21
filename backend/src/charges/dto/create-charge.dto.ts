@@ -8,7 +8,6 @@ import {
   IsOptional,
   IsUUID,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ChargeType } from '../enums/charge-type.enum';
 
 export class CreateChargeDto {
@@ -42,13 +41,4 @@ export class CreateChargeDto {
   @IsOptional()
   waterUnitPrice: number;
 
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  waterMeterOld?: number;
-
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  waterMeterNew?: number;
 }
