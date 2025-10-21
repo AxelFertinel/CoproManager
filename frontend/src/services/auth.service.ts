@@ -6,8 +6,7 @@ import {
     User,
 } from "../types/auth";
 
-const API_URL = "http://localhost:3000/auth";
-
+const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
 class AuthService {
     private readonly TOKEN_KEY = "token";
     private readonly USER_KEY = "user";

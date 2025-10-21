@@ -6,7 +6,7 @@ import {
     UpdateLogementData,
 } from "../types/logement";
 
-const API_URL = "http://localhost:3000";
+const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
 
 export const api = axios.create({
     baseURL: API_URL,
