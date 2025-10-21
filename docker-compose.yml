@@ -1,5 +1,3 @@
-#test
-
 services:
     db:
         image: mysql:8.0
@@ -50,11 +48,11 @@ services:
         restart: unless-stopped
         environment:
             NODE_ENV: production
-            VITE_API_URL: https://copromanager.duckdns.org
+            VITE_API_URL: http://localhost:3000
         depends_on:
             - backend
         ports:
-            - "80"
+            - "80:80"
         networks:
             - appnet
 
