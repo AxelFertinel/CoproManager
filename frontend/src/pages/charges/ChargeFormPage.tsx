@@ -25,6 +25,7 @@ import { chargesService } from "../../services/charges";
 
 const chargeSchema = z
     .object({
+        type: z.nativeEnum(ChargeType),
         amount: z.number().min(0, "Le montant doit être positif"),
         date: z.string().refine((date) => {
             const parsedDate = new Date(date);
@@ -32,7 +33,6 @@ const chargeSchema = z
         }, "Date de facturation invalide"),
         startDate: z.string().optional(),
         endDate: z.string().optional(),
-        type: z.nativeEnum(ChargeType),
         description: z.string().optional(),
         waterUnitPrice: z.preprocess((val) => {
             if (val === "" || val === undefined || val === null)
@@ -153,6 +153,10 @@ export default function ChargeFormPage() {
         const formattedData = {
             ...baseData,
             date: new Date(data.date).toISOString(),
+            startDate: startDate
+                ? new Date(startDate).toISOString()
+                : undefined,
+            endDate: endDate ? new Date(endDate).toISOString() : undefined,
         };
 
         if (id) {
