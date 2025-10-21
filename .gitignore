@@ -39,4 +39,4 @@ yarn-error.log*
 /frontend/build
 /frontend/.env 
 
-.docker-compose.yml
+docker-compose.yml
