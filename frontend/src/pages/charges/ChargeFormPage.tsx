@@ -25,12 +25,26 @@ import { chargesService } from "../../services/charges";
 
 const chargeSchema = z
     .object({
-        type: z.nativeEnum(ChargeType),
-        amount: z.number().min(0, "Le montant doit être positif"),
+        type: z.nativeEnum(ChargeType, {
+            required_error: "Le type de charge est obligatoire",
+        }),
+        amount: z.preprocess(
+            (val) => {
+                if (val === "" || val === null || val === undefined)
+                    return undefined;
+                const num = Number(val);
+                return isNaN(num) ? undefined : num;
+            },
+            z
+                .number({
+                    required_error: "Le montant est obligatoire",
+                })
+                .min(0, "Le montant doit être positif")
+        ),
         date: z.string().refine((date) => {
             const parsedDate = new Date(date);
             return !isNaN(parsedDate.getTime());
-        }, "Date de facturation invalide"),
+        }, "Date de facturation est obligatoire"),
         startDate: z.string().optional(),
         endDate: z.string().optional(),
         description: z.string().optional(),
@@ -45,28 +59,54 @@ const chargeSchema = z
             return val;
         }, z.number().min(0, "Le prix unitaire doit être positif").optional()),
     })
-    .refine(
-        (data) => {
-            if (
-                data.type === ChargeType.WATER &&
-                (!data.waterUnitPrice || data.waterUnitPrice <= 0)
-            ) {
-                return false;
-            }
-            if (
-                data.type !== ChargeType.OTHER &&
-                (!data.startDate || !data.endDate)
-            ) {
-                return false;
-            }
-            return true;
-        },
-        {
-            message:
-                "Veuillez remplir tous les champs requis pour ce type de charge",
-            path: ["type"],
+    .superRefine((data, ctx) => {
+        if (
+            data.type === ChargeType.WATER &&
+            (!data.waterUnitPrice || data.waterUnitPrice <= 0)
+        ) {
+            ctx.addIssue({
+                path: ["waterUnitPrice"],
+                message: "Le prix unitaire est requis pour une charge d’eau",
+                code: z.ZodIssueCode.custom,
+            });
         }
-    );
+
+        if (
+            data.type !== ChargeType.OTHER &&
+            (!data.startDate || !data.endDate)
+        ) {
+            if (!data.startDate) {
+                ctx.addIssue({
+                    path: ["startDate"],
+                    message:
+                        "La date de début est requise pour ce type de charge",
+                    code: z.ZodIssueCode.custom,
+                });
+            }
+            if (!data.endDate) {
+                ctx.addIssue({
+                    path: ["endDate"],
+                    message:
+                        "La date de fin est requise pour ce type de charge",
+                    code: z.ZodIssueCode.custom,
+                });
+            }
+        }
+
+        // 🚨 Nouvelle validation : endDate >= startDate
+        if (data.startDate && data.endDate) {
+            const start = new Date(data.startDate);
+            const end = new Date(data.endDate);
+            if (end < start) {
+                ctx.addIssue({
+                    path: ["endDate"],
+                    message:
+                        "La date de fin ne peut pas être antérieure à la date de début",
+                    code: z.ZodIssueCode.custom,
+                });
+            }
+        }
+    });
 
 type ChargeFormData = z.infer<typeof chargeSchema>;
 
@@ -184,6 +224,9 @@ export default function ChargeFormPage() {
                             ? "Modifiez les informations de la charge"
                             : "Remplissez les informations pour créer une nouvelle charge"}
                     </p>
+                    <p className="text-red-500">
+                        Les champs requis sont marqués d'un astérisque (*)
+                    </p>
                 </CardHeader>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <CardContent className="space-y-6 pt-6">
@@ -193,7 +236,7 @@ export default function ChargeFormPage() {
                                     htmlFor="type"
                                     className="text-sm font-medium text-gray-700"
                                 >
-                                    Type de charge
+                                    Type de charge *
                                 </label>
                                 <Controller
                                     name="type"
@@ -237,144 +280,160 @@ export default function ChargeFormPage() {
                                     </p>
                                 )}
                             </div>
-
-                            {watch("type") === ChargeType.WATER && (
-                                <div className="grid gap-2">
-                                    <label
-                                        htmlFor="waterUnitPrice"
-                                        className="text-sm font-medium text-gray-700"
-                                    >
-                                        Prix unitaire de l'eau (€/m³)
-                                    </label>
-                                    <Controller
-                                        name="waterUnitPrice"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <input
-                                                type="text"
-                                                inputMode="decimal"
-                                                pattern="[0-9]*[.,]?[0-9]*"
-                                                value={field.value ?? ""}
-                                                onChange={(e) =>
-                                                    field.onChange(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                onBlur={field.onBlur}
-                                                className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                            />
-                                        )}
-                                    />
-                                    {errors.waterUnitPrice && (
-                                        <p className="text-red-500 text-sm">
-                                            {errors.waterUnitPrice.message}
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-                            <div className="grid gap-2">
-                                <label
-                                    htmlFor="amount"
-                                    className="text-sm font-medium text-gray-700"
-                                >
-                                    Montant
-                                </label>
-                                <input
-                                    {...register("amount", {
-                                        valueAsNumber: true,
-                                    })}
-                                    type="number"
-                                    step="0.01"
-                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                    placeholder="0.00"
-                                />
-                                {errors.amount && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.amount.message}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="grid gap-2">
-                                <label
-                                    htmlFor="date"
-                                    className="text-sm font-medium text-gray-700"
-                                >
-                                    Date de Facturation
-                                </label>
-                                <input
-                                    {...register("date")}
-                                    type="date"
-                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                />
-                                {errors.date && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.date.message}
-                                    </p>
-                                )}
-                            </div>
-
-                            {watch("type") !== ChargeType.OTHER && (
+                            {watch("type") && (
                                 <>
                                     <div className="grid gap-2">
                                         <label
-                                            htmlFor="startDate"
+                                            htmlFor="amount"
                                             className="text-sm font-medium text-gray-700"
                                         >
-                                            Date de Début de Période
+                                            Montant en €
+                                            {watch("type") ===
+                                                ChargeType.INSURANCE ||
+                                            watch("type") === ChargeType.BANK
+                                                ? " par mois"
+                                                : ""}
+                                            &nbsp;*
                                         </label>
                                         <input
-                                            {...register("startDate")}
+                                            {...register("amount", {
+                                                valueAsNumber: true,
+                                            })}
+                                            type="number"
+                                            step="0.01"
+                                            className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                            placeholder="0.00"
+                                        />
+                                        {errors.amount && (
+                                            <p className="text-red-500 text-sm">
+                                                {errors.amount.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {watch("type") === ChargeType.WATER && (
+                                        <div className="grid gap-2">
+                                            <label
+                                                htmlFor="waterUnitPrice"
+                                                className="text-sm font-medium text-gray-700"
+                                            >
+                                                Prix unitaire de l'eau (€/m³) *
+                                            </label>
+                                            <Controller
+                                                name="waterUnitPrice"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <input
+                                                        type="text"
+                                                        inputMode="decimal"
+                                                        pattern="[0-9]*[.,]?[0-9]*"
+                                                        value={
+                                                            field.value ?? ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            field.onChange(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        onBlur={field.onBlur}
+                                                        className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                                    />
+                                                )}
+                                            />
+                                            {errors.waterUnitPrice && (
+                                                <p className="text-red-500 text-sm">
+                                                    {
+                                                        errors.waterUnitPrice
+                                                            .message
+                                                    }
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                    <div className="grid gap-2">
+                                        <label
+                                            htmlFor="date"
+                                            className="text-sm font-medium text-gray-700"
+                                        >
+                                            Date de Facturation *
+                                        </label>
+                                        <input
+                                            {...register("date")}
                                             type="date"
                                             className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                         />
-                                        {errors.startDate && (
+                                        {errors.date && (
                                             <p className="text-red-500 text-sm">
-                                                {errors.startDate.message}
+                                                {errors.date.message}
                                             </p>
                                         )}
                                     </div>
 
+                                    {watch("type") !== ChargeType.OTHER && (
+                                        <>
+                                            <div className="grid gap-2">
+                                                <label
+                                                    htmlFor="startDate"
+                                                    className="text-sm font-medium text-gray-700"
+                                                >
+                                                    Date de Début de Période *
+                                                </label>
+                                                <input
+                                                    {...register("startDate")}
+                                                    type="date"
+                                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                                />
+                                                {errors.startDate && (
+                                                    <p className="text-red-500 text-sm">
+                                                        {
+                                                            errors.startDate
+                                                                .message
+                                                        }
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <label
+                                                    htmlFor="endDate"
+                                                    className="text-sm font-medium text-gray-700"
+                                                >
+                                                    Date de Fin de Période *
+                                                </label>
+                                                <input
+                                                    {...register("endDate")}
+                                                    type="date"
+                                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                                />
+                                                {errors.endDate && (
+                                                    <p className="text-red-500 text-sm">
+                                                        {errors.endDate.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
+
                                     <div className="grid gap-2">
                                         <label
-                                            htmlFor="endDate"
+                                            htmlFor="description"
                                             className="text-sm font-medium text-gray-700"
                                         >
-                                            Date de Fin de Période
+                                            Description
                                         </label>
-                                        <input
-                                            {...register("endDate")}
-                                            type="date"
+                                        <textarea
+                                            {...register("description")}
                                             className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                            rows={4}
+                                            placeholder="Description de la charge"
                                         />
-                                        {errors.endDate && (
+                                        {errors.description && (
                                             <p className="text-red-500 text-sm">
-                                                {errors.endDate.message}
+                                                {errors.description.message}
                                             </p>
                                         )}
                                     </div>
                                 </>
                             )}
-
-                            <div className="grid gap-2">
-                                <label
-                                    htmlFor="description"
-                                    className="text-sm font-medium text-gray-700"
-                                >
-                                    Description (optionnel)
-                                </label>
-                                <textarea
-                                    {...register("description")}
-                                    className="border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                    rows={4}
-                                    placeholder="Description de la charge"
-                                />
-                                {errors.description && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.description.message}
-                                    </p>
-                                )}
-                            </div>
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-end space-x-2 border-t pt-6">
@@ -385,7 +444,7 @@ export default function ChargeFormPage() {
                         >
                             Annuler
                         </Button>
-                        <Button type="submit">
+                        <Button type="submit" disabled={!watch("type")}>
                             {id ? "Mettre à jour" : "Créer"}
                         </Button>
                     </CardFooter>
