@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation, Link, redirect } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { LoginCredentials } from "../../types/auth";
 import { authService } from "../../services/auth.service";

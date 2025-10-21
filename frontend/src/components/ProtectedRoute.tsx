@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { UserRole, User } from "../types/auth";
 import { authService } from "../services/auth.service";
 import { useEffect, useState } from "react";

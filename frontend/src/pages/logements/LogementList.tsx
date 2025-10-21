@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -62,7 +62,7 @@ export default function LogementList({ logements }: LogementListProps) {
             </div>
         );
     }
-    
+
     return (
         <div className="space-y-4">
             {/* Vue mobile */}
