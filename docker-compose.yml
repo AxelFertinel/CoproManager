@@ -46,13 +46,10 @@ services:
             context: ./frontend
             dockerfile: Dockerfile
         restart: unless-stopped
-        environment:
-            NODE_ENV: production
-            VITE_API_URL: http://localhost:3000
         depends_on:
             - backend
         ports:
-            - "3000:80"
+            - "80:80"
         networks:
             - appnet
 
