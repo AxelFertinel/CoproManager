@@ -14,7 +14,7 @@ services:
         command: --default-authentication-plugin=mysql_native_password
         networks:
             - appnet
-
+            - nginx-proxy-manager_default
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
         restart: unless-stopped
@@ -27,6 +27,7 @@ services:
             - db
         networks:
             - appnet
+            - nginx-proxy-manager_default
 
     backend:
         build:
@@ -43,6 +44,7 @@ services:
             - "3001:3000"
         networks:
             - appnet
+            - nginx-proxy-manager_default
 
     frontend:
         build:
@@ -55,6 +57,7 @@ services:
             - "80"
         networks:
             - appnet
+            - nginx-proxy-manager_default
 
 volumes:
     db-data:
@@ -62,3 +65,6 @@ volumes:
 networks:
     appnet:
         driver: bridge
+    nginx-proxy-manager_default:
+        external : true
+
