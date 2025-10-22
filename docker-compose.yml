@@ -65,6 +65,5 @@ volumes:
 networks:
     appnet:
         driver: bridge
-    nginx-proxy-manager_default:
-        external : true
-
+    nginx-manager:
+        external: true
