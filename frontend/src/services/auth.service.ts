@@ -6,9 +6,8 @@ import {
     User,
 } from "../types/auth";
 
-//const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
-const API_URL = "https://copromanager.duckdns.org/auth";
-//const API_URL = "http://localhost:3000/auth";
+//const API_URL = "https://copromanager.duckdns.org/auth";
+const API_URL = "http://localhost:3000/auth";
 
 class AuthService {
     private readonly TOKEN_KEY = "token";
@@ -60,7 +59,6 @@ class AuthService {
                 // Ne stocker que les informations nécessaires
                 const userData = {
                     role: response.data.user.role,
-                    coproprieteId: response.data.user.coproprieteId,
                 };
                 localStorage.setItem(this.USER_KEY, JSON.stringify(userData));
                 this.emitAuthStatusChange();

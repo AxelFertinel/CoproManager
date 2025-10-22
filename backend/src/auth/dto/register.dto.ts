@@ -8,6 +8,6 @@ export class RegisterDto {
   @MinLength(6)
   password: string;
 
-  @IsUUID()
-  coproprieteId: string;
+  // @IsUUID()
+  // coproprieteId: string;
 }

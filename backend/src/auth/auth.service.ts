@@ -8,6 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -26,12 +27,15 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    const coproprieteId = await this.prisma.copropriete
+      .create({ data: { name: randomUUID() } })
+      .then((c) => c.id);
 
     const user = await this.prisma.user.create({
       data: {
         email: registerDto.email,
         password: hashedPassword,
-        coproprieteId: registerDto.coproprieteId,
+        coproprieteId: coproprieteId,
       },
     });
 

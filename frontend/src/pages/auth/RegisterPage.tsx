@@ -26,7 +26,6 @@ export default function RegisterPage() {
             const registerData: RegisterData = {
                 ...data,
                 role: "ADMIN" as UserRole,
-                coproprieteId: crypto.randomUUID(),
             };
             await authService.register(registerData);
             toast.success("Compte créé avec succès");
