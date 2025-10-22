@@ -1,7 +1,6 @@
 services:
     db:
         image: mysql:8.0
-        container_name: copromanager-db
         restart: unless-stopped
         environment:
             MYSQL_ROOT_PASSWORD: change_me_root
@@ -10,45 +9,46 @@ services:
             MYSQL_PASSWORD: change_me
         volumes:
             - db-data:/var/lib/mysql
-        expose:
-            - "3306"
+        ports:
+            - "3306:3306"
         command: --default-authentication-plugin=mysql_native_password
         networks:
             - appnet
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
-        container_name: copromanager-phpmyadmin
         restart: unless-stopped
         environment:
             PMA_HOST: db
             PMA_PORT: 3306
-        expose:
-            - "80"
+        ports:
+            - "8080:80"
         depends_on:
             - db
         networks:
             - appnet
 
     backend:
-        image: axelfertinel/copro-backend:latest
-        container_name: copromanager-backend
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
         restart: unless-stopped
-        env_file:
-            - ./backend/.env
+        environment:
+            NODE_ENV: production
+            PORT: 3000
+            DATABASE_URL: mysql://copro:change_me@db:3306/coprodb
         depends_on:
             - db
-        expose:
-            - "3000"
+        ports:
+            - "3001:3000"
         networks:
             - appnet
 
     frontend:
-        image: axelfertinel/copro-frontend:latest
-        container_name: copromanager-frontend
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
         restart: unless-stopped
-        environment:
-            NODE_ENV: production
         depends_on:
             - backend
         expose:
