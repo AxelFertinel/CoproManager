@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
-# Attendre la base et appliquer les migrations Prisma (10 tentatives)
 
+# Attendre la base et appliquer les migrations Prisma (10 tentatives)
 if [ -n "$DATABASE_URL" ]; then
   echo "Vérification de la disponibilité de la base de données..."
   tries=0
@@ -16,5 +16,6 @@ if [ -n "$DATABASE_URL" ]; then
   done
   echo "Migrations Prisma exécutées (ou ignorées si aucune ou erreur)."
 fi
+
 # Démarrer le process principal
-exec "$@
+exec "$@"
