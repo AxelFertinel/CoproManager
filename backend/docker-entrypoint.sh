@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# Attendre la base et appliquer les migrations Prisma (10 tentatives)
+# Vérifier que DATABASE_URL est défini
 if [ -n "$DATABASE_URL" ]; then
   echo "Vérification de la disponibilité de la base de données..."
   tries=0
@@ -14,8 +14,8 @@ if [ -n "$DATABASE_URL" ]; then
     echo "Tentative $tries/10 — attente 3s avant nouvelle tentative..."
     sleep 3
   done
-  echo "Migrations Prisma exécutées (ou ignorées si aucune ou erreur)."
+  echo "Migrations Prisma appliquées (ou ignorées si déjà appliquées)."
 fi
 
-# Démarrer le process principal
+# Démarrer le serveur Node
 exec "$@"

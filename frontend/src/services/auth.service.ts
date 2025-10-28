@@ -58,7 +58,9 @@ class AuthService {
                 );
                 // Ne stocker que les informations nécessaires
                 const userData = {
+                    id: response.data.user.id,
                     role: response.data.user.role,
+                    coproprieteId: response.data.user.coproprieteId,
                 };
                 localStorage.setItem(this.USER_KEY, JSON.stringify(userData));
                 this.emitAuthStatusChange();

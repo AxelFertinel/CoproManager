@@ -1,20 +1,20 @@
 services:
     db:
-        image: mysql:8.0
+        image: mariadb:11.4
         restart: unless-stopped
         environment:
-            MYSQL_ROOT_PASSWORD: change_me_root
-            MYSQL_DATABASE: coprodb
-            MYSQL_USER: copro
-            MYSQL_PASSWORD: change_me
+            MARIADB_ROOT_PASSWORD: change_me_root
+            MARIADB_DATABASE: coprodb
+            MARIADB_USER: copro
+            MARIADB_PASSWORD: change_me
         volumes:
             - db-data:/var/lib/mysql
         ports:
             - "3306:3306"
-        command: --default-authentication-plugin=mysql_native_password
         networks:
             - appnet
-            # - nginx-network
+            - nginx-network
+
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
         restart: unless-stopped
@@ -27,7 +27,8 @@ services:
             - db
         networks:
             - appnet
-            # - nginx-network
+            - nginx-network
+
     backend:
         build:
             context: ./backend
@@ -40,10 +41,10 @@ services:
         depends_on:
             - db
         ports:
-            - "3001:3000"
+            - "3000:3000"
         networks:
             - appnet
-            # - nginx-network
+            - nginx-network
 
     frontend:
         build:
@@ -56,9 +57,11 @@ services:
             - "80"
         networks:
             - appnet
-            # - nginx-network
+            - nginx-network
+
 volumes:
     db-data:
+
 networks:
     appnet:
         driver: bridge

@@ -40,9 +40,11 @@ export class AuthService {
     });
 
     const payload = {
+      id: user.id,
       role: user.role,
-      coproprieteId: user.coproprieteId,
+      coproprieteId: coproprieteId,
     };
+
     return {
       access_token: this.jwtService.sign(payload),
       user: {

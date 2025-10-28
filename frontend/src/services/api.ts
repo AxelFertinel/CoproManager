@@ -6,7 +6,7 @@ import {
     UpdateLogementData,
 } from "../types/logement";
 
-//const API_URL = "https://copromanager.duckdns.org/auth";
+//const API_URL = "https://copromanager.duckdns.org";
 const API_URL = "http://localhost:3000";
 
 export const api = axios.create({
