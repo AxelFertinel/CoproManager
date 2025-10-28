@@ -29,7 +29,7 @@ export default function LogementListPage() {
                     <Button>Ajouter un logement</Button>
                 </Link>
             </div>
-            <LogementList logements={logements} />
+            <LogementList logements={logements || []} />
         </div>
     );
 }

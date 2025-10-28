@@ -26,6 +26,9 @@ export default function LogementList({ logements }: LogementListProps) {
     );
     const queryClient = useQueryClient();
 
+    // Protection contre les valeurs non-tableau
+    const safeLogements = Array.isArray(logements) ? logements : [];
+
     const deleteLogementMutation = useMutation({
         mutationFn: (id: number) => logementsService.delete(id),
         onSuccess: () => {
@@ -49,12 +52,14 @@ export default function LogementList({ logements }: LogementListProps) {
         }
     };
 
-    if (logements.length === 0) {
+    console.log(safeLogements);
+
+    if (safeLogements.length === 0) {
         return (
             <div className="text-center py-10">
                 <p className="text-muted-foreground">
                     Aucun logement n'a encore été ajouté. Ajoutez un nouveau
-                    logment pour commencer.
+                    logement pour commencer.
                 </p>
                 <Link to="/logement/new">
                     <Button className="mt-4">Ajouter un logement</Button>
@@ -67,7 +72,7 @@ export default function LogementList({ logements }: LogementListProps) {
         <div className="space-y-4">
             {/* Vue mobile */}
             <div className="lg:hidden space-y-4">
-                {logements.map((logement) => (
+                {safeLogements.map((logement) => (
                     <div
                         key={logement.id}
                         className="bg-white p-4 rounded-lg shadow"
@@ -149,7 +154,7 @@ export default function LogementList({ logements }: LogementListProps) {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {logements.map((logement) => (
+                        {safeLogements.map((logement) => (
                             <tr key={logement.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                     {logement.name}

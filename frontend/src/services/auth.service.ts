@@ -6,8 +6,8 @@ import {
     User,
 } from "../types/auth";
 
-//const API_URL = "https://copromanager.duckdns.org/auth";
-const API_URL = "http://localhost:3000/auth";
+const API_URL = "https://copromanager.duckdns.org/auth";
+//const API_URL = "http://localhost:3000/auth";
 
 class AuthService {
     private readonly TOKEN_KEY = "token";
